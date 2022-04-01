@@ -1,25 +1,36 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import { useQuery } from 'react-query'
-import { collection, query, getDocs, orderBy, limit } from "firebase/firestore";
-import { Flex } from '@chakra-ui/react';
+import { collection, query, getDocs, orderBy, limit, where } from "firebase/firestore";
 
-import PageWrapper from '../components/PageWrapper'
-import { firestore } from '../lib/firebase';
-import Link from 'next/link';
-import EventCard from '../components/EventCard';
 import { Event } from '../types';
+import { firestore } from '../lib/firebase';
+import PageWrapper from '../components/PageWrapper'
+import EventsList from '../components/EventsList';
+import { Flex } from '@chakra-ui/react';
 
 const Home: NextPage = () => {
   const { isLoading, error, data } = useQuery('initialEvents', async () => {
-    const q = query(collection(firestore, "eventos"), orderBy('tempo', 'desc'), limit(10))
+    const now = new Date();
+    const q = query(collection(firestore, "eventos"), orderBy('tempo', 'desc'), limit(10), where("tempo", ">", Date.parse(now.toDateString())))
     const querySnapshot = await getDocs(q);
     const events: Event[] = []
     querySnapshot.forEach((doc) => {
       const eventData = { id: doc.id, ...doc.data() }
       events.push(eventData as Event)
     });
-    console.log("🚀 ~ events", events)
+    return events
+  })
+
+  const { isLoading: loadingOld, error: errorOld, data: dataOld } = useQuery('oldEvents', async () => {
+    const now = new Date();
+    const q = query(collection(firestore, "eventos"), orderBy('tempo', 'desc'), limit(10), where("tempo", "<", Date.parse(now.toDateString())))
+    const querySnapshot = await getDocs(q);
+    const events: Event[] = []
+    querySnapshot.forEach((doc) => {
+      const eventData = { id: doc.id, ...doc.data() }
+      events.push(eventData as Event)
+    });
     return events
   })
 
@@ -31,11 +42,11 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <PageWrapper>
-        {isLoading && <p>Loading...</p>}
-        {error && <p>Error: {error}</p>}
-        {data && (
-          data.map((event) => <EventCard event={event} key={event?.id} />)
-        )}
+        {(error || errorOld) && <p>Error: {error || errorOld}</p>}
+        <Flex direction='row' gridColumnGap='50px' width='100%' justifyContent='center'>
+          {data && <EventsList title='Próximos eventos' events={data} isLoading={isLoading} />}
+          {dataOld && <EventsList title='Eventos passados' events={dataOld} isLoading={loadingOld} />}
+        </Flex>
       </PageWrapper>
     </>
   )
