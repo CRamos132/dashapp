@@ -2,10 +2,12 @@ import { Flex, useMediaQuery } from '@chakra-ui/react'
 import Link from 'next/link'
 import { AiFillHome } from 'react-icons/ai'
 import { BsFillPersonFill } from 'react-icons/bs'
+import { useAuth } from '../../contexts/AuthContext'
 
 import IconButton from '../IconButton'
 
 function MenuContent() {
+  const auth = useAuth()
   return (
     <>
       <Flex>
@@ -13,7 +15,7 @@ function MenuContent() {
           <IconButton aria-label='Home' as={AiFillHome} w={12} h={12} />
         </Link>
       </Flex>
-      <Link href='/login' passHref>
+      <Link href={auth.user ? '/profile' : '/login'} passHref>
         <IconButton aria-label='Login' justifySelf='flex-end' as={BsFillPersonFill} w={12} h={12} />
       </Link>
     </>

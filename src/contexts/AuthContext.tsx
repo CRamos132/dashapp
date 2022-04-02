@@ -1,13 +1,10 @@
-import { createContext, ReactNode, useContext, useState } from 'react';
-import { signInWithEmailAndPassword } from "firebase/auth"
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
+import { onAuthStateChanged, signInWithEmailAndPassword, User } from "firebase/auth"
 import { auth } from '../lib/firebase';
-
-interface TUser {
-  name: string
-}
+import { useRouter } from 'next/router';
 
 interface TAuthContext {
-  user: TUser | null;
+  user: User | null;
   loginWithEmail: ((email: string, password: string) => void);
 }
 
@@ -18,21 +15,27 @@ const AuthContext = createContext<TAuthContext>({
 });
 
 function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState<User | null>(null)
+  const router = useRouter()
 
   const handleEmailLogin = (email: string, password: string) => {
-    console.log('chamou')
     signInWithEmailAndPassword(auth, email as string, password as string)
       .then((data: any) => {
-        console.log("🚀 ~ data", data)
         setUser(data)
-        alert('logado, volta pra outra página')
+        router.push('/')
       })
       .catch(error => {
         alert('deu run, vê o console e me avisa')
         console.log("🚀 ~ error", error)
       })
   }
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, data => {
+      setUser(data)
+    });
+    return unsubscribe;
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, loginWithEmail: handleEmailLogin }}>
