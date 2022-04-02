@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/router"
-import { getDoc, doc, addDoc, collection } from "firebase/firestore";
+import { getDoc, doc, updateDoc } from "firebase/firestore";
 import {
   FormControl,
   FormLabel,
@@ -12,12 +12,13 @@ import {
 import { firestore } from "../../../../lib/firebase";
 import PageWrapper from "../../../../components/PageWrapper";
 
-export default function DuplicateEventPage() {
+export default function EditEventPage() {
   const [eventData, setEventData] = useState<Record<string, any>>({})
   const router = useRouter()
+  const { eventId } = router.query
+
 
   const getEvent = async () => {
-    const { eventId } = router.query
     if (!eventId) return
     const docRef = doc(firestore, "eventos", eventId as string);
     const docSnap = await getDoc(docRef);
@@ -55,7 +56,7 @@ export default function DuplicateEventPage() {
     if (submitData?.inscritos) {
       delete submitData.inscritos
     }
-    addDoc(collection(firestore, "eventos"), {
+    updateDoc(doc(firestore, "eventos", eventId as string), {
       ...submitData
     })
       .then(data => alert('sucesso'))
