@@ -7,13 +7,15 @@ import {
   Input,
   Flex,
   Textarea,
-  Button
+  Button,
+  useToast
 } from "@chakra-ui/react";
 import { firestore } from "../../../../lib/firebase";
 import PageWrapper from "../../../../components/PageWrapper";
 
 export default function EditEventPage() {
   const [eventData, setEventData] = useState<Record<string, any>>({})
+  const toast = useToast()
   const router = useRouter()
   const { eventId } = router.query
 
@@ -59,10 +61,22 @@ export default function EditEventPage() {
     updateDoc(doc(firestore, "eventos", eventId as string), {
       ...submitData
     })
-      .then(data => alert('sucesso'))
+      .then(data => {
+        toast({
+          title: 'Evento criado com sucesso.',
+          status: 'success',
+          duration: 9000,
+          isClosable: true,
+        })
+      })
       .catch(error => {
-        alert('erro, vê o console e me avisa')
-        console.log(error)
+        toast({
+          title: 'Algo deu errado.',
+          description: error,
+          status: 'error',
+          duration: 9000,
+          isClosable: true,
+        })
       })
   }
 
