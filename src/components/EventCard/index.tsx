@@ -8,6 +8,7 @@ import {
   MenuItem,
 } from "@chakra-ui/react"
 import Link from "next/link"
+import { useAuth } from "../../contexts/AuthContext"
 import { Event } from "../../types"
 
 interface IProps {
@@ -15,6 +16,7 @@ interface IProps {
 }
 
 export default function EventCard({ event }: IProps) {
+  const auth = useAuth()
   return (
     <Flex as='button' direction='column' alignItems='flex-end' cursor='pointer'>
       <Link href={`/evento/${event.id}`} passHref>
@@ -22,24 +24,28 @@ export default function EventCard({ event }: IProps) {
           <Box>{event?.apelido || event.titulo}</Box>
         </Flex>
       </Link>
-      <Flex>
-        <Menu>
-          <MenuButton as={Button} >
-            ...
-          </MenuButton>
-          <MenuList>
-            <MenuItem>
-              <Link href={`/evento/${event.id}/duplicar`}>
-                Duplicar
-              </Link>
-            </MenuItem>
-            <MenuItem>
-              <Link href={`/evento/${event.id}/editar`}>
-                Editar
-              </Link></MenuItem>
-          </MenuList>
-        </Menu>
-      </Flex>
+      {
+        auth.isAdmin ? (
+          <Flex>
+            <Menu>
+              <MenuButton as={Button} >
+                ...
+              </MenuButton>
+              <MenuList>
+                <MenuItem>
+                  <Link href={`/evento/${event.id}/duplicar`}>
+                    Duplicar
+                  </Link>
+                </MenuItem>
+                <MenuItem>
+                  <Link href={`/evento/${event.id}/editar`}>
+                    Editar
+                  </Link></MenuItem>
+              </MenuList>
+            </Menu>
+          </Flex>
+        ) : null
+      }
     </Flex>
   )
 }

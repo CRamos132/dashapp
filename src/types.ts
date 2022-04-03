@@ -21,4 +21,9 @@ export interface Event {
   titulo: string
   uf: string
   url: string
+  inscritos?: {
+    foto?: string
+    id?: string
+    nome?: string
+  }[]
 }

@@ -1,22 +1,30 @@
 import { Flex, useMediaQuery } from '@chakra-ui/react'
 import Link from 'next/link'
 import { AiFillHome } from 'react-icons/ai'
-import { BsFillPersonFill } from 'react-icons/bs'
-import { useAuth } from '../../contexts/AuthContext'
+import { BsFillPersonFill, BsFillPersonCheckFill } from 'react-icons/bs'
 
+import { useAuth } from '../../contexts/AuthContext'
 import IconButton from '../IconButton'
 
 function MenuContent() {
   const auth = useAuth()
+  const [isLargerThan720] = useMediaQuery('(min-width: 720px)')
   return (
     <>
-      <Flex>
+      <Flex flexDir={isLargerThan720 ? 'column' : 'row'} gridGap='18px'>
         <Link href='/' passHref>
           <IconButton aria-label='Home' as={AiFillHome} w={12} h={12} />
         </Link>
+        {
+          auth.isAdmin ? (
+            <Link href='/admin' passHref>
+              <IconButton aria-label='Admin' as={BsFillPersonCheckFill} w={12} h={12} />
+            </Link>
+          ) : null
+        }
       </Flex>
       <Link href={auth.user ? '/profile' : '/login'} passHref>
-        <IconButton aria-label='Login' justifySelf='flex-end' as={BsFillPersonFill} w={12} h={12} />
+        <IconButton aria-label={auth.user ? 'Profile' : 'Login'} justifySelf='flex-end' as={BsFillPersonFill} w={12} h={12} />
       </Link>
     </>
   )
@@ -47,6 +55,8 @@ export default function Menu() {
             direction='row'
             position='fixed'
             justifyContent='space-between'
+            padding='10px'
+            alignItems='center'
             top='90vh'
             left='0px'
             width='100%'

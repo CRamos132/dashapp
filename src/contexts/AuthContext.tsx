@@ -1,21 +1,26 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { onAuthStateChanged, signInWithEmailAndPassword, User } from "firebase/auth"
+import { onAuthStateChanged, signInWithEmailAndPassword, User, signOut } from "firebase/auth"
 import { auth } from '../lib/firebase';
 import { useRouter } from 'next/router';
 
 interface TAuthContext {
   user: User | null;
   loginWithEmail: ((email: string, password: string) => void);
+  isAdmin: boolean;
+  logout: () => void;
 }
 
 
 const AuthContext = createContext<TAuthContext>({
   user: null,
-  loginWithEmail: () => { }
+  loginWithEmail: () => { },
+  isAdmin: false,
+  logout: () => { },
 });
 
 function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const router = useRouter()
 
   const handleEmailLogin = (email: string, password: string) => {
@@ -30,15 +35,33 @@ function AuthProvider({ children }: { children: ReactNode }) {
       })
   }
 
+  const handleLogout = () => {
+    signOut(auth)
+      .then(() => {
+        setUser(null)
+        setIsAdmin(false)
+        router.push('/')
+      })
+      .catch(error => {
+        alert('Algo deu errado')
+      })
+  }
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, data => {
+      if (!data) return
+      data.getIdTokenResult().then((IdTokenResult) => {
+        if (IdTokenResult?.claims?.admin) {
+          setIsAdmin(true)
+        }
+      })
       setUser(data)
     });
     return unsubscribe;
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loginWithEmail: handleEmailLogin }}>
+    <AuthContext.Provider value={{ user, loginWithEmail: handleEmailLogin, isAdmin, logout: handleLogout }}>
       {children}
     </AuthContext.Provider>
   )

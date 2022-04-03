@@ -2,6 +2,12 @@ import { IconButton as ButtonComponente, IconButtonProps } from "@chakra-ui/reac
 
 export default function IconButton({ ...props }: IconButtonProps) {
   return (
-    <ButtonComponente  {...props} aria-label={props['aria-label']} backgroundColor='transparent' cursor='pointer' />
+    <ButtonComponente
+      {...props}
+      aria-label={props['aria-label']}
+      backgroundColor='transparent'
+      cursor='pointer'
+      title={props['aria-label']}
+    />
   )
 }
