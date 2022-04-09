@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, User, signOut } from "firebase/auth"
-import { auth } from '../lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, firestore } from '../lib/firebase';
 import { useRouter } from 'next/router';
 
 interface TAuthContext {
@@ -8,18 +9,28 @@ interface TAuthContext {
   loginWithEmail: ((email: string, password: string) => void);
   isAdmin: boolean;
   logout: () => void;
+  aditionalData: AditionalUserData | null;
 }
 
+interface AditionalUserData {
+  apelido: string;
+  email: string;
+  foto: string;
+  nome: string;
+  org?: string[];
+}
 
 const AuthContext = createContext<TAuthContext>({
   user: null,
   loginWithEmail: () => { },
   isAdmin: false,
   logout: () => { },
+  aditionalData: null,
 });
 
 function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [aditionalUserInfo, setAditionalUserInfo] = useState<AditionalUserData | null>(null)
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const router = useRouter()
 
@@ -47,6 +58,21 @@ function AuthProvider({ children }: { children: ReactNode }) {
       })
   }
 
+  const getUser = async () => {
+    if (!user) return
+    const docRef = doc(firestore, "users", user?.uid);
+    const docSnap = await getDoc(docRef);
+    const parsedData = docSnap.data()
+    setAditionalUserInfo(parsedData as AditionalUserData)
+  }
+
+  useEffect(() => {
+    if (user) {
+      getUser()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, data => {
       if (!data) return
@@ -61,7 +87,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loginWithEmail: handleEmailLogin, isAdmin, logout: handleLogout }}>
+    <AuthContext.Provider value={{ user, loginWithEmail: handleEmailLogin, isAdmin, logout: handleLogout, aditionalData: aditionalUserInfo }}>
       {children}
     </AuthContext.Provider>
   )
