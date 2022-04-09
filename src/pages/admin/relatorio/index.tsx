@@ -55,9 +55,9 @@ export default function ReportPage() {
   const handleCopy = () => {
     if (!!data?.length) {
       const dataToTable = data.map(item => {
-        return [item.nome, item.apelido, item.email]
+        return [item.nome, item.apelido, item.email, item?.cidade ?? '--', item?.uf ?? '--']
       })
-      const csvData = convertArrayToCSV([['nome', 'apelido', 'email'], ...dataToTable])
+      const csvData = convertArrayToCSV([['nome', 'apelido', 'email', 'cidade', 'uf'], ...dataToTable])
       navigator.clipboard.writeText(csvData)
         .then(() => {
           toast({
@@ -83,6 +83,8 @@ export default function ReportPage() {
           <th>Nome</th>
           <th>Email</th>
           <th>Apelido</th>
+          <th>Cidade</th>
+          <th>UF</th>
         </thead>
         <tbody>
           {tableData.map((user) => {
@@ -92,6 +94,8 @@ export default function ReportPage() {
                 <td>{user?.nome}</td>
                 <td>{user?.email}</td>
                 <td>{user?.apelido}</td>
+                <td>{user?.cidade}</td>
+                <td>{user?.uf}</td>
               </tr>
             )
           })}
