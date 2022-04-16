@@ -90,8 +90,10 @@ export default function FidelidashManagementPage() {
                           }}
                         >
                           <option value=''>Sem fidelidash</option>
-                          <option value='silver'>Silver</option>
-                          <option value='gold'>Gold</option>
+                          <option value='bronze'>Bronze</option>
+                          <option value='prata'>Prata</option>
+                          <option value='ouro'>Ouro</option>
+                          <option value='platina'>Platina</option>
                         </Select>
                       </td>
                     </tr>
