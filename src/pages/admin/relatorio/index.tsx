@@ -19,6 +19,7 @@ interface ReportUser {
   twitch?: string;
   twitter?: string;
   uf?: string;
+  fidelidash?: string;
 }
 
 export default function ReportPage() {
@@ -78,6 +79,7 @@ export default function ReportPage() {
         <thead>
           <th>Nome</th>
           <th>Email</th>
+          <th>Fidelidash</th>
           <th>Apelido</th>
           <th>Cidade</th>
           <th>UF</th>
@@ -87,11 +89,12 @@ export default function ReportPage() {
             if (!user) return null
             return (
               <tr key={user.id}>
-                <td>{user?.nome}</td>
-                <td>{user?.email}</td>
-                <td>{user?.apelido}</td>
-                <td>{user?.cidade}</td>
-                <td>{user?.uf}</td>
+                <td>{user?.nome ?? '--'}</td>
+                <td>{user?.email ?? '--'}</td>
+                <td>{user?.fidelidash ?? '--'}</td>
+                <td>{user?.apelido ?? '--'}</td>
+                <td>{user?.cidade ?? '--'}</td>
+                <td>{user?.uf ?? '--'}</td>
               </tr>
             )
           })}
