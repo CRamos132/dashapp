@@ -10,6 +10,11 @@ export default function AdminPage() {
           Relatório de usuários
         </Button>
       </Link>
+      <Link href='/admin/fidelidash' passHref>
+        <Button>
+          Gerenciar Fidelidash
+        </Button>
+      </Link>
     </PageWrapper>
   )
 }
