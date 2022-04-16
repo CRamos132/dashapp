@@ -38,7 +38,7 @@ export default function ReportPage() {
   const columns: any = [
     {
       Header: 'Nome',
-      accessor: 'nome', // accessor is the "key" in the data
+      accessor: 'nome',
     },
     {
       Header: 'Email',
@@ -70,12 +70,8 @@ export default function ReportPage() {
     }
   }
 
-  useEffect(() => {
-    console.log("🚀 ~ data", data)
-  }, [data])
-
   return (
-    <PageWrapper>
+    <PageWrapper isAdminPage>
       {isLoading && <p>Carregando...</p>}
       <Button onClick={handleCopy}>Copiar relatório</Button>
       <table>

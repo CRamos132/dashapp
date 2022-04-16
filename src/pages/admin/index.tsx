@@ -4,7 +4,7 @@ import PageWrapper from "../../components/PageWrapper";
 
 export default function AdminPage() {
   return (
-    <PageWrapper>
+    <PageWrapper isAdminPage >
       <Link href='/admin/relatorio' passHref>
         <Button>
           Relatório de usuários
