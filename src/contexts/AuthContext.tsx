@@ -3,6 +3,7 @@ import { onAuthStateChanged, signInWithEmailAndPassword, User, signOut } from "f
 import { doc, getDoc } from 'firebase/firestore';
 import { auth, firestore } from '../lib/firebase';
 import { useRouter } from 'next/router';
+import { AditionalUserData } from '../types';
 
 interface TAuthContext {
   user: User | null;
@@ -10,15 +11,6 @@ interface TAuthContext {
   isAdmin: boolean;
   logout: () => void;
   aditionalData: AditionalUserData | null;
-}
-
-interface AditionalUserData {
-  apelido: string;
-  email: string;
-  foto: string;
-  nome: string;
-  org?: string[];
-  fidelidash?: string;
 }
 
 const AuthContext = createContext<TAuthContext>({

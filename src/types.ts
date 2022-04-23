@@ -28,3 +28,12 @@ export interface Event {
     nome?: string
   }[]
 }
+
+export interface AditionalUserData {
+  apelido: string;
+  email: string;
+  foto: string;
+  nome: string;
+  org?: string[];
+  fidelidash?: string;
+}

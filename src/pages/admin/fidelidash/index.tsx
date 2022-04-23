@@ -1,13 +1,26 @@
 import { FormEventHandler, useState } from "react";
 import { Box, Button, Flex, Input, Select, useToast } from "@chakra-ui/react";
 import PageWrapper from "../../../components/PageWrapper";
-import { collection, getDocs, query, where, writeBatch, doc } from "firebase/firestore";
+import { collection, getDocs, query, where, writeBatch, doc, getDoc, orderBy } from "firebase/firestore";
 import { firestore } from "../../../lib/firebase";
+import { useQuery } from "react-query";
+import { AditionalUserData } from "../../../types";
 
 export default function FidelidashManagementPage() {
   const [userList, setUserList] = useState<any[]>([])
   const [usersToChange, setUsersToChange] = useState<any[]>([])
   const toast = useToast()
+
+  const { isLoading, error, data } = useQuery('fidelidasg', async () => {
+    const q = query(collection(firestore, "users"), orderBy('fidelidash'))
+    const querySnapshot = await getDocs(q);
+    const users: AditionalUserData[] = []
+    querySnapshot.forEach((doc) => {
+      const eventData = doc.data()
+      users.push(eventData as AditionalUserData)
+    });
+    return users
+  })
 
   const handleSubmit: FormEventHandler<HTMLDivElement> = async (e) => {
     e.preventDefault();
@@ -60,13 +73,14 @@ export default function FidelidashManagementPage() {
           <Input type='text' name='search' placeholder="Nome de usuário" required />
           <Button type="submit">Buscar usuário</Button>
         </Flex>
+        <Flex>
+          {usersToChange.length > 0 && (
+            <Button onClick={handleUpdate}>Atualizar usuários</Button>
+          )}
+        </Flex>
         {userList.length > 0 && (
           <>
-            <Flex>
-              {usersToChange.length > 0 && (
-                <Button onClick={handleUpdate}>Atualizar usuários</Button>
-              )}
-            </Flex>
+            <Box as='h2' fontSize='1.5rem' fontWeight='bold' margin='12px 0'>Search users</Box>
             <Box as='table'>
               <thead>
                 <tr>
@@ -103,6 +117,23 @@ export default function FidelidashManagementPage() {
             </Box>
           </>
         )}
+        <Box as='h2' fontSize='1.5rem' fontWeight='bold' margin='12px 0'>All fidelidash</Box>
+        <Box as='table'>
+          <Flex as='tr' direction='row' justifyContent='space-between'>
+            <Box as='th'>Nome</Box>
+            <Box as='th'>Email</Box>
+            <Box as='th'>Fidelidash</Box>
+          </Flex>
+          {data?.map((user) => {
+            return (
+              <Flex as='tr' key={user.nome} direction='row' justifyContent='space-between'>
+                <Box as='th'>{user?.apelido}</Box>
+                <Box as='th'>{user?.email}</Box>
+                <Box as='th'>{user?.fidelidash}</Box>
+              </Flex>
+            )
+          })}
+        </Box>
       </Flex>
     </PageWrapper>
   )
