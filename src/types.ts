@@ -24,6 +24,7 @@ export interface Event {
   inscritos?: {
     foto?: string
     id?: string
+    fidelidash?: string
     nome?: string
   }[]
 }

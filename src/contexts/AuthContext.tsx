@@ -18,6 +18,7 @@ interface AditionalUserData {
   foto: string;
   nome: string;
   org?: string[];
+  fidelidash?: string;
 }
 
 const AuthContext = createContext<TAuthContext>({

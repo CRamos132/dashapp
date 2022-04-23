@@ -12,7 +12,7 @@ import { Flex } from '@chakra-ui/react';
 const Home: NextPage = () => {
   const { isLoading, error, data } = useQuery('initialEvents', async () => {
     const now = new Date();
-    const q = query(collection(firestore, "eventos"), orderBy('tempo', 'desc'), limit(10), where("tempo", ">", Date.parse(now.toDateString())))
+    const q = query(collection(firestore, "eventos"), orderBy('tempo', 'asc'), limit(10), where("tempo", ">", Date.parse(now.toDateString())))
     const querySnapshot = await getDocs(q);
     const events: Event[] = []
     querySnapshot.forEach((doc) => {

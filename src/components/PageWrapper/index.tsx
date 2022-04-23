@@ -1,15 +1,15 @@
 import { useEffect } from 'react';
-import { Box, useMediaQuery } from '@chakra-ui/react'
+import { Box, BoxProps, useMediaQuery } from '@chakra-ui/react'
 import { useAuth } from '../../contexts/AuthContext'
 import Menu from '../Menu'
 import { useRouter } from 'next/router';
 
-interface IProps {
+interface IProps extends BoxProps {
   children: React.ReactNode;
   isAdminPage?: boolean;
 }
 
-export default function PageWrapper({ children, isAdminPage }: IProps) {
+export default function PageWrapper({ children, isAdminPage, ...props }: IProps) {
   const router = useRouter()
   const [isLargerThan720] = useMediaQuery('(min-width: 720px)')
   const auth = useAuth()
@@ -20,7 +20,7 @@ export default function PageWrapper({ children, isAdminPage }: IProps) {
     }
   }, [auth, isAdminPage, router])
   return (
-    <Box minHeight='100vh' padding={isLargerThan720 ? '0 0 0 100px' : '0 0 10vh 0'}>
+    <Box minHeight='100vh' padding={isLargerThan720 ? '0 0 0 100px' : '0 0 10vh 0'} {...props}>
       {children}
       <Menu />
     </Box>
