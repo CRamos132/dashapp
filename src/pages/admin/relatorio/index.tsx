@@ -3,7 +3,7 @@ import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { useQuery } from "react-query";
 import PageWrapper from "../../../components/PageWrapper";
 import { firestore } from "../../../lib/firebase";
-import { Button, useToast } from "@chakra-ui/react";
+import { Box, Button, useToast } from "@chakra-ui/react";
 import convertToCSV, { convertArrayToCSV } from "../../../utils/convertToCSV";
 
 interface ReportUser {
@@ -75,6 +75,7 @@ export default function ReportPage() {
     <PageWrapper isAdminPage>
       {isLoading && <p>Carregando...</p>}
       <Button onClick={handleCopy}>Copiar relatório</Button>
+      <Box margin='12px 0'>{tableData?.length} usuários</Box>
       <table>
         <thead>
           <th>Nome</th>
