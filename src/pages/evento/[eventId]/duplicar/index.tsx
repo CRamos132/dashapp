@@ -33,6 +33,10 @@ export default function DuplicateEventPage() {
         const clean = docData.regras.replace(/<br>/g, "\r\n");
         docData.regras = clean
       }
+      if (docData.stagelist) {
+        const clean = docData.stagelist.replace(/<br>/g, "\r\n");
+        docData.stagelist = clean
+      }
       setEventData(docData)
     }
   }
@@ -57,6 +61,9 @@ export default function DuplicateEventPage() {
     if (submitData?.inscritos) {
       delete submitData.inscritos
     }
+    submitData.sobre = submitData.sobre.replaceAll(/\r?\n/g, "<br>")
+    submitData.stagelist = submitData.stagelist.replaceAll(/\r?\n/g, "<br>")
+    submitData.regras = submitData.regras.replaceAll(/\r?\n/g, "<br>")
     addDoc(collection(firestore, "eventos"), {
       ...submitData
     })

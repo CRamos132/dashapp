@@ -34,6 +34,10 @@ export default function EditEventPage() {
         const clean = docData.regras.replace(/<br>/g, "\r\n");
         docData.regras = clean
       }
+      if (docData.stagelist) {
+        const clean = docData.stagelist.replace(/<br>/g, "\r\n");
+        docData.stagelist = clean
+      }
       setEventData(docData)
     }
   }
@@ -55,6 +59,9 @@ export default function EditEventPage() {
     const submitData = eventData
     submitData.tempo = Date.parse(tempo as string)
     submitData.limite = Date.parse(limite as string)
+    submitData.sobre = submitData.sobre.replaceAll(/\r?\n/g, "<br>")
+    submitData.stagelist = submitData.stagelist.replaceAll(/\r?\n/g, "<br>")
+    submitData.regras = submitData.regras.replaceAll(/\r?\n/g, "<br>")
     if (submitData?.inscritos) {
       delete submitData.inscritos
     }
