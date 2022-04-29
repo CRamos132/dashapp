@@ -70,7 +70,7 @@ export default function EditEventPage() {
     })
       .then(data => {
         toast({
-          title: 'Evento criado com sucesso.',
+          title: 'Evento editado com sucesso.',
           status: 'success',
           duration: 9000,
           isClosable: true,
@@ -144,7 +144,7 @@ export default function EditEventPage() {
             <FormLabel htmlFor='org'>Org</FormLabel>
             <Input id='org' name='org' type='text' disabled defaultValue={eventData?.org || ''} />
           </FormControl>
-          <Button colorScheme='blue' type='submit'>Duplicar</Button>
+          <Button colorScheme='blue' type='submit'>Editar</Button>
         </Flex>
       </form>
     </PageWrapper>
