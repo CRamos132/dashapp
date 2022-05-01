@@ -36,14 +36,12 @@ export default function EventsPage() {
       const currentQuery = lastItem ? nextQuery : firstQuery
       const querySnapshot = await getDocs(currentQuery);
       const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
-      console.log("🚀 ~ lastVisible", lastVisible)
       setLastItem(lastVisible)
       const events: Event[] = []
       querySnapshot.forEach((doc) => {
         const eventData = { id: doc.id, ...doc.data() }
         events.push(eventData as Event)
       });
-      console.log("🚀 ~ events", events)
       return events
     },
     {
@@ -56,10 +54,6 @@ export default function EventsPage() {
       },
     },
   );
-
-  useEffect(() => {
-    console.log("🚀 ~ data", data)
-  }, [data])
 
   return (
     <PageWrapper>
