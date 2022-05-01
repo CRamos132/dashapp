@@ -1,4 +1,4 @@
-import { Flex, useMediaQuery } from '@chakra-ui/react'
+import { Flex } from '@chakra-ui/react'
 import Link from 'next/link'
 import { AiFillHome } from 'react-icons/ai'
 import { BsFillPersonFill, BsFillPersonCheckFill } from 'react-icons/bs'
@@ -8,10 +8,9 @@ import IconButton from '../IconButton'
 
 function MenuContent() {
   const auth = useAuth()
-  const [isLargerThan720] = useMediaQuery('(min-width: 720px)')
   return (
     <>
-      <Flex flexDir={isLargerThan720 ? 'column' : 'row'} gridGap='18px'>
+      <Flex flexDir={['row', 'column']} gridGap='18px'>
         <Link href='/' passHref>
           <IconButton aria-label='Home' as={AiFillHome} w={12} h={12} />
         </Link>
@@ -31,43 +30,22 @@ function MenuContent() {
 }
 
 export default function Menu() {
-  const [isLargerThan720] = useMediaQuery('(min-width: 720px)')
   return (
-    <>
-      {
-        isLargerThan720 ? (
-          <Flex
-            direction='column'
-            position='fixed'
-            alignItems='center'
-            justifyContent='space-between'
-            padding='10px'
-            top='0px'
-            left='0px'
-            width='100px'
-            height='100vh'
-            backgroundColor='blue.500'
-          >
-            <MenuContent />
-          </Flex>
-        ) : (
-          <Flex
-            direction='row'
-            position='fixed'
-            justifyContent='space-between'
-            padding='10px'
-            alignItems='center'
-            top='90vh'
-            left='0px'
-            width='100%'
-            height='10vh'
-            backgroundColor='blue.500'
-          >
-            <MenuContent />
-          </Flex>
-        )
-      }
-    </>
+    <Flex
+      direction={['row', 'column']}
+      position='fixed'
+      alignItems='center'
+      justifyContent='space-between'
+      padding='10px'
+      top={['90vh', '0']}
+      left={['0', '0']}
+      width={['100%', '100px']}
+      height={['10vh', '100vh']}
+      backgroundColor='blue.500'
+    >
+      <MenuContent />
+    </Flex>
+
 
   )
 }

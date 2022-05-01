@@ -43,7 +43,7 @@ const Home: NextPage = () => {
       </Head>
       <PageWrapper>
         {(error || errorOld) && <p>Error: {error || errorOld}</p>}
-        <Flex direction='row' gridColumnGap='50px' width='100%' justifyContent='center'>
+        <Flex direction={['column', 'row']} gridColumnGap='50px' width='100%' justifyContent='center'>
           {data && <EventsList title='Próximos eventos' events={data} isLoading={isLoading} />}
           {dataOld && <EventsList title='Eventos passados' events={dataOld} isLoading={loadingOld} />}
         </Flex>
