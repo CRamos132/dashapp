@@ -8,11 +8,12 @@ import {
   createUserWithEmailAndPassword,
   updateProfile
 } from "firebase/auth";
-import { doc, getDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, firestore } from '../../lib/firebase';
 import { useRouter } from 'next/router';
 import { AditionalUserData } from '../../types';
 import { IAccountRegisterInput } from './auth-types'
+import { useToast } from '@chakra-ui/react';
 
 interface TAuthContext {
   user: User | null;
@@ -26,9 +27,9 @@ interface TAuthContext {
 
 const AuthContext = createContext<TAuthContext>({
   user: null,
-  loginWithEmail: () => {},
-  registerAccount: () => {},
-  recoverPassword: () => {},
+  loginWithEmail: () => { },
+  registerAccount: () => { },
+  recoverPassword: () => { },
   isAdmin: false,
   logout: () => { },
   aditionalData: null,
@@ -38,7 +39,34 @@ function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [aditionalUserInfo, setAditionalUserInfo] = useState<AditionalUserData | null>(null)
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
+
+  const toast = useToast()
   const router = useRouter()
+
+  const saveUserToDB = (userData: any) => {
+    const { id, ...data } = userData
+    console.log("🚀 ~ userData", userData)
+    setDoc(doc(firestore, "user", id), data)
+      .then(() => {
+        toast({
+          title: "Usuário criado com sucesso",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+        router.push('/')
+      })
+      .catch((error) => {
+        console.log("🚀 ~ error", error)
+        toast({
+          title: "Algo deu errado",
+          description: "Tente novamente",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+      })
+  }
 
   const registerAccount = ({
     name,
@@ -48,24 +76,48 @@ function AuthProvider({ children }: { children: ReactNode }) {
     confirmPassword,
   }: IAccountRegisterInput) => {
     if (password !== confirmPassword) {
-      alert('As senhas não coincidem') // !TODO Implements some toast
+      toast({
+        title: "As senhas não coincidem",
+        status: "error",
+        duration: 9000,
+        isClosable: true,
+      });
       return
     }
 
     createUserWithEmailAndPassword(auth, email, password)
-      .then(({user}) => {
-        // need to save user Name and Nickname to the new User
+      .then(({ user }) => {
         updateProfile(user, {
           displayName: nickname,
         }).then(() => {
-          console.log('user updated')
+          const userData = {
+            id: user.uid,
+            apelido: nickname,
+            email: email,
+            nome: name,
+            foto: "img/default-profile.png",
+            createdAd: new Date().toISOString()
+          }
+          saveUserToDB(userData)
         }).catch(() => {
-          console.log('error updating user')
+          toast({
+            title: "As senhas não coincidem",
+            description: "Não foi possível atualizar o perfil do usuário",
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+          });
         })
-        router.push('/login')
+
       })
       .catch(error => {
-        alert('deu run, vê o console e me avisa')
+        toast({
+          title: "Algo deu errado",
+          description: "Por favor, tente novamente mais tarde",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
         console.log("🚀 ~ error", error)
       })
   };
@@ -73,14 +125,26 @@ function AuthProvider({ children }: { children: ReactNode }) {
   const recoverPassword = (email: string) => {
     sendPasswordResetEmail(auth, email)
       .then(() => {
-        alert('Email enviado') // !TODO Implements some toast
+        toast({
+          title: "Email enviado",
+          description: "Verifique sua caixa de entrada",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
       })
       .catch(error => {
-        alert('deu run, vê o console e me avisa')
+        toast({
+          title: "Algo deu errado",
+          description: "Por favor, tente novamente mais tarde",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
         console.log("🚀 ~ error", error)
       })
   }
-  
+
   const handleEmailLogin = (email: string, password: string) => {
     signInWithEmailAndPassword(auth, email as string, password as string)
       .then((data: any) => {
@@ -88,7 +152,13 @@ function AuthProvider({ children }: { children: ReactNode }) {
         router.push('/')
       })
       .catch(error => {
-        alert('deu run, vê o console e me avisa')
+        toast({
+          title: "Algo deu errado",
+          description: "Por favor, tente novamente mais tarde",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
         console.log("🚀 ~ error", error)
       })
   }
@@ -101,13 +171,20 @@ function AuthProvider({ children }: { children: ReactNode }) {
         router.push('/')
       })
       .catch(error => {
-        alert('Algo deu errado')
+        toast({
+          title: "Algo deu errado",
+          description: "Por favor, tente novamente mais tarde",
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+        });
+        console.log("🚀 ~ error", error)
       })
   }
 
   const getUser = async () => {
-    if (!user) return
-    const docRef = doc(firestore, "users", user?.uid);
+    if (!user || !user?.uid) return
+    const docRef = doc(firestore, "users", user.uid);
     const docSnap = await getDoc(docRef);
     const parsedData = docSnap.data()
     setAditionalUserInfo(parsedData as AditionalUserData)
