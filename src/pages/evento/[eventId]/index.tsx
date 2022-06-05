@@ -20,6 +20,7 @@ import { IEvent } from "../../../interfaces/Event";
 import convertToCSV from "../../../utils/convertToCSV";
 import { useAuth } from "../../../contexts/AuthContext";
 import { SubscribersList } from "../../../components/SubscribersList";
+import { CustomLink } from "../../../components/CustomLink";
 
 function EventInformation({ title, information }: { title: string, information: string }) {
   return (
@@ -131,10 +132,12 @@ export default function EventPage() {
       })
   }
 
+  const defaultSocialMediaText = `Eu%20me%20registrei%20em%20${data?.titulo}`
+  
   if (isLoading || !data) {
     <p>Carregando...</p>
   }
-
+  
   return (
     <PageWrapper>
       <Box padding='24px'>
@@ -150,7 +153,23 @@ export default function EventPage() {
             {data?.titulo}
           </Box>
           <Flex direction='column' gridRowGap='8px' alignItems='center' width='100%' margin='12px auto'>
-            <Button width='80%' maxWidth='300px'>Tweet</Button>
+            <CustomLink 
+              href={
+                `https://twitter.com/intent/tweet?via=TeamDASHBR&text=Eu%20me%20registrei%20em%20${data?.socialMediaText || defaultSocialMediaText}`
+              }
+              width="100%"
+              background="gray.100"
+              textAlign="center"
+              borderRadius="6px"
+              padding="6px"
+              fontWeight="bold"
+              color="black"
+              _hover={{
+                backgroundColor: "gray.200",
+              }}
+            >
+              Tweet
+            </CustomLink>
             {data?.regras && <EventInformation information={data.regras} title='Regras' />}
             {data?.stagelist && <EventInformation information={data.stagelist} title='Stagelist' />}
             {data?.bracket && <Button as='a' href={data.bracket} target='_blank' rel='noopener' width='80%' maxWidth='300px'>Bracket</Button>}

@@ -87,7 +87,6 @@ export default function EditEventPage() {
 
   const handleChange = (e: any) => {
     const newEventData = { ...eventData, [e.target.name]: e.target.value }
-    console.log({newEventData})
     setEventData(newEventData)
   }
 
@@ -105,6 +104,9 @@ export default function EditEventPage() {
     submitData.sobre = submitData.sobre.replaceAll(/\r?\n/g, "<br>")
     submitData.stagelist = submitData.stagelist.replaceAll(/\r?\n/g, "<br>")
     submitData.regras = submitData.regras.replaceAll(/\r?\n/g, "<br>")
+    if(submitData.socialMediaText) {
+      submitData.socialMediaText = encodeURIComponent(submitData.socialMediaText)
+    }
 
     updateDoc(doc(firestore, "eventos", eventId as string), {
       ...submitData
@@ -176,6 +178,16 @@ export default function EditEventPage() {
           <FormControl>
             <FormLabel htmlFor='fb'>Link do FB</FormLabel>
             <Input id='fb' name='fb' type='text' value={eventData?.fb || ''} onChange={handleChange} />
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor='socialMediaText'>Texto do tweet</FormLabel>
+            <Textarea
+              id="socialMediaText"
+              name="socialMediaText"
+              maxLength={280} 
+              value={eventData?.socialMediaText || ''}
+              onChange={handleChange}
+            />
           </FormControl>
           <FormControl>
             <FormLabel htmlFor='url'>URL</FormLabel>

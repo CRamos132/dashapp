@@ -18,13 +18,6 @@ export default function LoginPage() {
     const formData = new FormData(e.target);
     const { name, nickname, email, password, confirmPassword } =
       Object.fromEntries(formData) as unknown as IAccountRegisterInput;
-    console.log({
-      name,
-      nickname,
-      email,
-      password,
-      confirmPassword,
-    });
     registerAccount({ name, nickname, email, password, confirmPassword });
   };
 

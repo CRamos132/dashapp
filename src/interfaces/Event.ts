@@ -29,4 +29,5 @@ export interface IEvent {
   uf: string
   url: string
   inscritos?: IEventSubscriber[]
+  socialMediaText?: string
 }

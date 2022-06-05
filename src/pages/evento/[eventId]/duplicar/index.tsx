@@ -101,7 +101,9 @@ export default function DuplicateEventPage() {
     submitData.sobre = submitData.sobre.replaceAll(/\r?\n/g, "<br>")
     submitData.stagelist = submitData.stagelist.replaceAll(/\r?\n/g, "<br>")
     submitData.regras = submitData.regras.replaceAll(/\r?\n/g, "<br>")
-
+    if(submitData.socialMediaText) {
+      submitData.socialMediaText = encodeURIComponent(submitData.socialMediaText)
+    }
     addDoc(collection(firestore, "eventos"), {
       ...submitData
     })
@@ -172,6 +174,16 @@ export default function DuplicateEventPage() {
           <FormControl>
             <FormLabel htmlFor='fb'>Link do FB</FormLabel>
             <Input id='fb' name='fb' type='text' value={eventData?.fb || ''} onChange={handleChange} />
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor='socialMediaText'>Texto do tweet</FormLabel>
+            <Textarea
+              id="socialMediaText"
+              name="socialMediaText"
+              maxLength={280} 
+              value={eventData?.socialMediaText || ''}
+              onChange={handleChange}
+            />
           </FormControl>
           <FormControl>
             <FormLabel htmlFor='url'>URL</FormLabel>
