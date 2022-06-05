@@ -12,17 +12,53 @@ import {
 } from "@chakra-ui/react";
 import { firestore } from "../../../../lib/firebase";
 import PageWrapper from "../../../../components/PageWrapper";
+import { SubscribersList } from "../../../../components/SubscribersList";
+import { IEvent } from "../../../../interfaces/Event";
+import { getUsers } from "../../../../lib/firebase/UsersRepository";
 
 export default function DuplicateEventPage() {
-  const [eventData, setEventData] = useState<Record<string, any>>({})
+  const [eventData, setEventData] = useState<IEvent>({} as IEvent)
   const router = useRouter()
   const toast = useToast()
+  const { asPath } = router
+  const eventId = asPath.split('/')[2]
 
+  async function addFidelidashUsers() {
+    const fidelidashUsers = await getUsers({orderBy: "fidelidash"})
+    
+    const fidelidashUsersParsed = fidelidashUsers.map((user) => {
+      return {
+        nome: user.firebaseData?.apelido || '',
+        foto: user.firebaseData?.foto || '',
+        id: user.id,
+        fidelidash: user.firebaseData?.fidelidash || ''
+      }
+    })
+
+    const actualSubscribers = eventData.inscritos || []
+    const subscribers = [...actualSubscribers, ...fidelidashUsersParsed]
+
+
+    // remove duplicated
+    const ids: any[] = []
+    const deduplicatedSubscribers = subscribers.filter((subscriber) => {
+      const alreadyExists = ids.includes(subscriber.id)
+      if(alreadyExists) {
+        return false
+      }
+
+      ids.push(subscriber.id)
+      return subscriber
+    })
+    
+    setEventData({...eventData, inscritos: deduplicatedSubscribers})
+  }
+  
   const getEvent = async () => {
-    const { eventId } = router.query
-    if (!eventId) return
+    if (!eventId || eventId === '[eventId]') return
     const docRef = doc(firestore, "eventos", eventId as string);
     const docSnap = await getDoc(docRef);
+  
     if (docSnap) {
       const docData = docSnap.data() as any
       if (docData.sobre) {
@@ -56,14 +92,16 @@ export default function DuplicateEventPage() {
     const formData = new FormData(e.target)
     const { tempo, limite } = Object.fromEntries(formData)
     const submitData = eventData
-    submitData.tempo = Date.parse(tempo as string)
-    submitData.limite = Date.parse(limite as string)
-    if (submitData?.inscritos) {
-      delete submitData.inscritos
+    if(tempo) {
+      submitData.tempo = Date.parse(tempo as string);
+    }
+    if(limite) {
+      submitData.limite = Date.parse(limite as string);
     }
     submitData.sobre = submitData.sobre.replaceAll(/\r?\n/g, "<br>")
     submitData.stagelist = submitData.stagelist.replaceAll(/\r?\n/g, "<br>")
     submitData.regras = submitData.regras.replaceAll(/\r?\n/g, "<br>")
+
     addDoc(collection(firestore, "eventos"), {
       ...submitData
     })
@@ -143,6 +181,9 @@ export default function DuplicateEventPage() {
             <FormLabel htmlFor='org'>Org</FormLabel>
             <Input id='org' name='org' type='text' disabled defaultValue={eventData?.org || ''} />
           </FormControl>
+          <Flex justifyContent="center" width="100%">
+            <SubscribersList isManageable subscribers={eventData.inscritos || []} addFidelidashUsers={addFidelidashUsers} />
+          </Flex>
           <Button colorScheme='blue' type='submit'>Duplicar</Button>
         </Flex>
       </form>

@@ -6,7 +6,7 @@ import { useInfiniteQuery, useQuery } from "react-query";
 import EventCard from "../../components/EventCard";
 import PageWrapper from "../../components/PageWrapper";
 import { firestore } from "../../lib/firebase";
-import { Event } from "../../types";
+import { IEvent } from "../../interfaces/Event";
 
 export default function EventsPage() {
   const [lastItem, setLastItem] = useState<any>(null)
@@ -37,10 +37,10 @@ export default function EventsPage() {
       const querySnapshot = await getDocs(currentQuery);
       const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
       setLastItem(lastVisible)
-      const events: Event[] = []
+      const events: IEvent[] = []
       querySnapshot.forEach((doc) => {
         const eventData = { id: doc.id, ...doc.data() }
-        events.push(eventData as Event)
+        events.push(eventData as IEvent)
       });
       return events
     },

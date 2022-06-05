@@ -8,36 +8,74 @@ import {
   Flex,
   Textarea,
   Button,
-  useToast
+  useToast,
 } from "@chakra-ui/react";
 import { firestore } from "../../../../lib/firebase";
 import PageWrapper from "../../../../components/PageWrapper";
+import { SubscribersList } from "../../../../components/SubscribersList";
+import { IEvent } from "../../../../interfaces/Event";
+import { getUsers } from "../../../../lib/firebase/UsersRepository";
 
 export default function EditEventPage() {
-  const [eventData, setEventData] = useState<Record<string, any>>({})
+  const [eventData, setEventData] = useState<IEvent>({} as IEvent)
   const toast = useToast()
   const router = useRouter()
-  const { eventId } = router.query
+  const { asPath } = router
+  const eventId = asPath.split('/')[2]
 
+  async function addFidelidashUsers() {
+    const fidelidashUsers = await getUsers({orderBy: "fidelidash"})
+    
+    const fidelidashUsersParsed = fidelidashUsers.map((user) => {
+      return {
+        nome: user.firebaseData?.apelido || '',
+        foto: user.firebaseData?.foto || '',
+        id: user.id,
+        fidelidash: user.firebaseData?.fidelidash || ''
+      }
+    })
+
+    const actualSubscribers = eventData.inscritos || []
+    const subscribers = [...actualSubscribers, ...fidelidashUsersParsed]
+
+
+    // remove duplicated
+    const ids: any[] = []
+    const deduplicatedSubscribers = subscribers.filter((subscriber) => {
+      const alreadyExists = ids.includes(subscriber.id)
+      if(alreadyExists) {
+        return false
+      }
+
+      ids.push(subscriber.id)
+      return subscriber
+    })
+    
+    setEventData({...eventData, inscritos: deduplicatedSubscribers})
+  }
 
   const getEvent = async () => {
-    if (!eventId) return
+    if (!eventId || eventId === '[eventId]') return
     const docRef = doc(firestore, "eventos", eventId as string);
     const docSnap = await getDoc(docRef);
+
     if (docSnap) {
-      const docData = docSnap.data() as any
-      if (docData.sobre) {
+      const docData = docSnap.data() as IEvent
+      if (docData?.sobre) {
         const clean = docData.sobre.replace(/<br>/g, "\r\n");
         docData.sobre = clean
       }
-      if (docData.regras) {
+      if (docData?.regras) {
         const clean = docData.regras.replace(/<br>/g, "\r\n");
         docData.regras = clean
       }
-      if (docData.stagelist) {
+      if (docData?.stagelist) {
         const clean = docData.stagelist.replace(/<br>/g, "\r\n");
         docData.stagelist = clean
       }
+      // if(docData?.tempo) {
+      //   docData.tempo = new Date(docData.tempo)
+      // }
       setEventData(docData)
     }
   }
@@ -45,10 +83,11 @@ export default function EditEventPage() {
   useEffect(() => {
     getEvent()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [asPath])
 
   const handleChange = (e: any) => {
     const newEventData = { ...eventData, [e.target.name]: e.target.value }
+    console.log({newEventData})
     setEventData(newEventData)
   }
 
@@ -57,14 +96,16 @@ export default function EditEventPage() {
     const formData = new FormData(e.target)
     const { tempo, limite } = Object.fromEntries(formData)
     const submitData = eventData
-    submitData.tempo = Date.parse(tempo as string)
-    submitData.limite = Date.parse(limite as string)
+    if(tempo) {
+      submitData.tempo = Date.parse(tempo as string);
+    }
+    if(limite) {
+      submitData.limite = Date.parse(limite as string);
+    }
     submitData.sobre = submitData.sobre.replaceAll(/\r?\n/g, "<br>")
     submitData.stagelist = submitData.stagelist.replaceAll(/\r?\n/g, "<br>")
     submitData.regras = submitData.regras.replaceAll(/\r?\n/g, "<br>")
-    if (submitData?.inscritos) {
-      delete submitData.inscritos
-    }
+
     updateDoc(doc(firestore, "eventos", eventId as string), {
       ...submitData
     })
@@ -144,6 +185,9 @@ export default function EditEventPage() {
             <FormLabel htmlFor='org'>Org</FormLabel>
             <Input id='org' name='org' type='text' disabled defaultValue={eventData?.org || ''} />
           </FormControl>
+          <Flex justifyContent="center" width="100%">
+            <SubscribersList isManageable subscribers={eventData.inscritos || []} addFidelidashUsers={addFidelidashUsers} />
+          </Flex>
           <Button colorScheme='blue' type='submit'>Editar</Button>
         </Flex>
       </form>

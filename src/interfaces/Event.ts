@@ -1,4 +1,11 @@
-export interface Event {
+export interface IEventSubscriber {
+  foto?: string
+  id?: string
+  fidelidash?: string
+  nome?: string
+}
+
+export interface IEvent {
   apelido?: string
   bracket: string
   cidade: string
@@ -21,19 +28,5 @@ export interface Event {
   titulo: string
   uf: string
   url: string
-  inscritos?: {
-    foto?: string
-    id?: string
-    fidelidash?: string
-    nome?: string
-  }[]
-}
-
-export interface AditionalUserData {
-  apelido: string;
-  email: string;
-  foto: string;
-  nome: string;
-  org?: string[];
-  fidelidash?: string;
+  inscritos?: IEventSubscriber[]
 }

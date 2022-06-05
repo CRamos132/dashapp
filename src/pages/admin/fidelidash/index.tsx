@@ -4,7 +4,7 @@ import PageWrapper from "../../../components/PageWrapper";
 import { collection, getDocs, query, where, writeBatch, doc, getDoc, orderBy } from "firebase/firestore";
 import { firestore } from "../../../lib/firebase";
 import { useQuery } from "react-query";
-import { AditionalUserData } from "../../../types";
+import { IAditionalUserData } from "../../../interfaces/User";
 
 export default function FidelidashManagementPage() {
   const [userList, setUserList] = useState<any[]>([])
@@ -14,10 +14,10 @@ export default function FidelidashManagementPage() {
   const { isLoading, error, data } = useQuery('fidelidasg', async () => {
     const q = query(collection(firestore, "users"), orderBy('fidelidash'))
     const querySnapshot = await getDocs(q);
-    const users: AditionalUserData[] = []
+    const users: IAditionalUserData[] = []
     querySnapshot.forEach((doc) => {
       const eventData = doc.data()
-      users.push(eventData as AditionalUserData)
+      users.push(eventData as IAditionalUserData)
     });
     return users
   })
@@ -99,7 +99,7 @@ export default function FidelidashManagementPage() {
                         <Select
                           placeholder="Selecione um tipo"
                           value={user?.fidelidash}
-                          onChange={(e) => {
+                          onChange={(e: any) => {
                             setUsersToChange([...usersToChange, { ...user, fidelidash: e.target.value }])
                           }}
                         >

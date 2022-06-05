@@ -16,9 +16,10 @@ import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firest
 
 import PageWrapper from "../../../components/PageWrapper";
 import { firestore } from "../../../lib/firebase";
-import { Event } from "../../../types";
+import { IEvent } from "../../../interfaces/Event";
 import convertToCSV from "../../../utils/convertToCSV";
 import { useAuth } from "../../../contexts/AuthContext";
+import { SubscribersList } from "../../../components/SubscribersList";
 
 function EventInformation({ title, information }: { title: string, information: string }) {
   return (
@@ -49,7 +50,7 @@ export default function EventPage() {
   const { isLoading, data, refetch } = useQuery(`event-${eventId}`, async () => {
     const docRef = doc(firestore, "eventos", eventId as string);
     const docSnap = await getDoc(docRef);
-    return docSnap.data() as Event
+    return docSnap.data() as IEvent
   })
 
   const handleCopy = () => {
@@ -173,7 +174,7 @@ export default function EventPage() {
                   <Button onClick={handleRemove}>
                     Cancelar inscrição
                   </Button>)}
-                {data?.inscritos?.map((user) => {
+                {/* {data?.inscritos?.map((user) => {
                   return (
                     <Flex key={user.id} direction='row' alignItems='center' gridColumnGap='8px'>
                       {user?.foto !== 'img/default-profile.png' ? (
@@ -182,7 +183,10 @@ export default function EventPage() {
                       <p>{user.nome}</p>
                     </Flex>
                   )
-                })}
+                })} */}
+                {data?.inscritos && (
+                  <SubscribersList subscribers={data.inscritos}></SubscribersList>
+                )}
               </Flex>
             </>
           ) : (<Button as='a' href={data?.bracket} target='_blank' rel='noopener'>Ir para o Smash.gg</Button>)}

@@ -9,10 +9,10 @@ import {
 } from "@chakra-ui/react"
 import Link from "next/link"
 import { useAuth } from "../../contexts/AuthContext"
-import { Event } from "../../types"
+import { IEvent } from "../../interfaces/Event"
 
 interface IProps {
-  event: Event
+  event: IEvent
 }
 
 export default function EventCard({ event }: IProps) {
