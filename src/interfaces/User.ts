@@ -18,7 +18,7 @@ export interface IFirebaseUserData {
   twitch?: string;
   twitter?: string;
   uf?: string;
-  fidelidash?: string;
+  fidelidash?: "ouro" | "prata";
 }
 
 export interface IAditionalUserData {
@@ -27,5 +27,5 @@ export interface IAditionalUserData {
   foto: string;
   nome: string;
   org?: string[];
-  fidelidash?: string;
+  fidelidash?: "ouro" | "prata";
 }
