@@ -45,8 +45,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
 
   const saveUserToDB = (userData: any) => {
     const { id, ...data } = userData
-    console.log("🚀 ~ userData", userData)
-    setDoc(doc(firestore, "user", id), data)
+    setDoc(doc(firestore, "users", id), data)
       .then(() => {
         toast({
           title: "Usuário criado com sucesso",
