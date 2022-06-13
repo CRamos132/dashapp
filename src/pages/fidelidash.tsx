@@ -1,13 +1,17 @@
-import { Box, Flex, Grid, Heading, Text, Image } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import {
+  Box,
+  Flex,
+  Grid,
+  Heading,
+  Text,
+  Image,
+} from "@chakra-ui/react";
+import { useQuery } from 'react-query'
+import { useState } from "react";
 import PageWrapper from "../components/PageWrapper";
 import { IUser } from "../interfaces/User";
 import { getUsers } from "../lib/firebase/UsersRepository";
-
-const userBorders = {
-  ouro: "2px solid yellow",
-  prata: "2px solid silver",
-};
+import { rankBorders } from "../utils/rank";
 
 export default function FidelidashPage() {
   const [fidelidash, setFidelidash] = useState<IUser[]>([] as IUser[]);
@@ -15,16 +19,15 @@ export default function FidelidashPage() {
   async function getFidelidash() {
     const fidelidashUsers = await getUsers({ orderBy: "fidelidash" });
     setFidelidash(fidelidashUsers);
+    return fidelidashUsers
   }
 
-  useEffect(() => {
-    getFidelidash();
-  }, []);
+  useQuery('getFidelidash', getFidelidash);
 
   return (
     <PageWrapper>
       <Flex direction="column" alignItems="center">
-        <Heading fontSize={30}>Fidelidash</Heading>
+        <Heading mt="4" fontSize={30}>Fidelidash</Heading>
 
         <Flex direction="column" gap="4" mt="4">
           {fidelidash.map((user) => {
@@ -45,7 +48,7 @@ export default function FidelidashPage() {
                     alt={user.firebaseData?.nome}
                     border={
                       user.firebaseData?.fidelidash
-                        ? userBorders[user.firebaseData?.fidelidash]
+                        ? rankBorders[user.firebaseData?.fidelidash]
                         : ""
                     }
                   />
@@ -57,7 +60,7 @@ export default function FidelidashPage() {
                     backgroundColor="gray.400"
                     border={
                       user.firebaseData?.fidelidash
-                        ? userBorders[user.firebaseData?.fidelidash]
+                        ? rankBorders[user.firebaseData?.fidelidash]
                         : ""
                     }
                   />

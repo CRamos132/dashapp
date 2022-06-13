@@ -1,9 +1,8 @@
 export interface IUser {
   id: string;
-  aditionalUserData?: IAditionalUserData
-  firebaseData?: IFirebaseUserData
+  aditionalUserData?: IAditionalUserData;
+  firebaseData?: IFirebaseUserData;
 }
-
 
 export interface IFirebaseUserData {
   nome: string;
@@ -18,7 +17,7 @@ export interface IFirebaseUserData {
   twitch?: string;
   twitter?: string;
   uf?: string;
-  fidelidash?: "ouro" | "prata";
+  fidelidash?: FidelidashRanks;
 }
 
 export interface IAditionalUserData {
@@ -27,5 +26,7 @@ export interface IAditionalUserData {
   foto: string;
   nome: string;
   org?: string[];
-  fidelidash?: "ouro" | "prata";
+  fidelidash?: FidelidashRanks;
 }
+
+export type FidelidashRanks = "bronze" | "prata" | "ouro" | "platina";

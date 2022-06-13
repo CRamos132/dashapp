@@ -1,5 +1,6 @@
 import { Box, Grid, GridProps, Image, Text } from "@chakra-ui/react";
 import { IEventSubscriber } from "../../../interfaces/Event";
+import { rankBorders } from "../../../utils/rank";
 
 interface IProps extends GridProps {
   subscriber: IEventSubscriber;
@@ -21,7 +22,9 @@ export function SubscriberCard({ subscriber, ...props }: IProps) {
           borderRadius="50%"
           src={subscriber.foto}
           alt={subscriber.nome}
-          border={subscriber.fidelidash ? "2px solid yellow" : ""}
+          border={
+            subscriber.fidelidash ? rankBorders[subscriber.fidelidash] : ""
+          }
         />
       ) : (
         <Box
@@ -29,7 +32,9 @@ export function SubscriberCard({ subscriber, ...props }: IProps) {
           width={12}
           borderRadius="50%"
           backgroundColor="gray.400"
-          border={subscriber.fidelidash ? "2px solid yellow" : ""}
+          border={
+            subscriber.fidelidash ? rankBorders[subscriber.fidelidash] : ""
+          }
         />
       )}
       <Text ml={4}>{subscriber.nome}</Text>
