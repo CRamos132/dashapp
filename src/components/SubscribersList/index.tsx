@@ -1,14 +1,18 @@
 import { Button, Flex, Grid } from "@chakra-ui/react";
-import { IEvent } from "../../interfaces/Event"
+import { IEvent } from "../../interfaces/Event";
 import { SubscriberCard } from "./SubscriberCard";
 
 interface IProps {
-  subscribers: IEvent['inscritos'];
+  subscribers: IEvent["inscritos"];
   isManageable?: boolean;
   addFidelidashUsers?: () => void;
 }
 
-export function SubscribersList({ subscribers, isManageable = false, addFidelidashUsers }: IProps) {
+export function SubscribersList({
+  subscribers,
+  isManageable = false,
+  addFidelidashUsers,
+}: IProps) {
   return (
     <Grid
       direction="column"
@@ -20,7 +24,7 @@ export function SubscribersList({ subscribers, isManageable = false, addFidelida
       backgroundColor={"gray.100"}
       width="100%"
       alignSelf="center"
-      templateColumns="1fr 1fr"
+      templateColumns={["1fr", "1fr", "1fr 1fr", "1fr 1fr 1fr"]}
       justifyItems="center"
     >
       {isManageable && addFidelidashUsers && (

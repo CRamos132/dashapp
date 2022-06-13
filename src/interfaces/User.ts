@@ -29,4 +29,4 @@ export interface IAditionalUserData {
   fidelidash?: FidelidashRanks;
 }
 
-export type FidelidashRanks = "bronze" | "prata" | "ouro" | "platina";
+export type FidelidashRanks = "bronze" | "prata" | "ouro" | "platina" | "";

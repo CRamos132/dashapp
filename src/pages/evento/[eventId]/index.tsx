@@ -155,7 +155,7 @@ export default function EventPage() {
           <Flex direction='column' gridRowGap='8px' alignItems='center' width='100%' margin='12px auto'>
             <CustomLink 
               href={
-                `https://twitter.com/intent/tweet?via=TeamDASHBR&text=Eu%20me%20registrei%20em%20${data?.socialMediaText || defaultSocialMediaText}`
+                `https://twitter.com/intent/tweet?via=TeamDASHBR&text=${data?.socialMediaText || defaultSocialMediaText}`
               }
               width="100%"
               background="gray.100"

@@ -18,7 +18,6 @@ import { getUsers } from "../../../lib/firebase/UsersRepository";
 
 export default function DuplicateEventPage() {
   const [eventData, setEventData] = useState<IEvent>({} as IEvent);
-  const router = useRouter();
   const toast = useToast();
 
   async function addFidelidashUsers() {
@@ -31,24 +30,9 @@ export default function DuplicateEventPage() {
         id: user.id,
         fidelidash: user.firebaseData?.fidelidash || "",
       };
-    });
+    }) as Required<IEvent>['inscritos']
 
-    const actualSubscribers = eventData.inscritos || [];
-    const subscribers = [...actualSubscribers, ...fidelidashUsersParsed];
-
-    // remove duplicated
-    const ids: any[] = [];
-    const deduplicatedSubscribers = subscribers.filter((subscriber) => {
-      const alreadyExists = ids.includes(subscriber.id);
-      if (alreadyExists) {
-        return false;
-      }
-
-      ids.push(subscriber.id);
-      return subscriber;
-    });
-
-    setEventData({ ...eventData, inscritos: deduplicatedSubscribers });
+    setEventData({ ...eventData, inscritos: fidelidashUsersParsed });
   }
 
   const handleChange = (e: any) => {
@@ -79,7 +63,7 @@ export default function DuplicateEventPage() {
     })
       .then((data) => {
         toast({
-          title: "Evento duplicado com sucesso.",
+          title: "Evento criado com sucesso.",
           status: "success",
           duration: 9000,
           isClosable: true,
@@ -235,7 +219,7 @@ export default function DuplicateEventPage() {
           <Flex justifyContent="center" width="100%">
             <SubscribersList
               isManageable
-              subscribers={eventData.inscritos || []}
+              subscribers={eventData.inscritos}
               addFidelidashUsers={addFidelidashUsers}
             />
           </Flex>

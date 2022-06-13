@@ -24,7 +24,7 @@ export default function DuplicateEventPage() {
   const eventId = asPath.split('/')[2]
 
   async function addFidelidashUsers() {
-    const fidelidashUsers = await getUsers({orderBy: "fidelidash"})
+    const fidelidashUsers = await getUsers({orderBy: "fidelidash"}) || []
     
     const fidelidashUsersParsed = fidelidashUsers.map((user) => {
       return {
@@ -33,32 +33,18 @@ export default function DuplicateEventPage() {
         id: user.id,
         fidelidash: user.firebaseData?.fidelidash || ''
       }
-    })
+    }) as Required<IEvent>['inscritos']
 
-    const actualSubscribers = eventData.inscritos || []
-    const subscribers = [...actualSubscribers, ...fidelidashUsersParsed]
+    const inscritos = [...fidelidashUsersParsed]
 
-
-    // remove duplicated
-    const ids: any[] = []
-    const deduplicatedSubscribers = subscribers.filter((subscriber) => {
-      const alreadyExists = ids.includes(subscriber.id)
-      if(alreadyExists) {
-        return false
-      }
-
-      ids.push(subscriber.id)
-      return subscriber
-    })
-    
-    setEventData({...eventData, inscritos: deduplicatedSubscribers})
+    setEventData({...eventData, inscritos})
   }
   
   const getEvent = async () => {
     if (!eventId || eventId === '[eventId]') return
     const docRef = doc(firestore, "eventos", eventId as string);
     const docSnap = await getDoc(docRef);
-  
+    console.log({docSnap})
     if (docSnap) {
       const docData = docSnap.data() as any
       if (docData.sobre) {
@@ -73,6 +59,7 @@ export default function DuplicateEventPage() {
         const clean = docData.stagelist.replace(/<br>/g, "\r\n");
         docData.stagelist = clean
       }
+      docData.inscritos = []
       setEventData(docData)
     }
   }
@@ -80,7 +67,7 @@ export default function DuplicateEventPage() {
   useEffect(() => {
     getEvent()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [eventId])
 
   const handleChange = (e: any) => {
     const newEventData = { ...eventData, [e.target.name]: e.target.value }
@@ -194,7 +181,7 @@ export default function DuplicateEventPage() {
             <Input id='org' name='org' type='text' disabled defaultValue={eventData?.org || ''} />
           </FormControl>
           <Flex justifyContent="center" width="100%">
-            <SubscribersList isManageable subscribers={eventData.inscritos || []} addFidelidashUsers={addFidelidashUsers} />
+            <SubscribersList isManageable subscribers={eventData.inscritos} addFidelidashUsers={addFidelidashUsers} />
           </Flex>
           <Button colorScheme='blue' type='submit'>Duplicar</Button>
         </Flex>

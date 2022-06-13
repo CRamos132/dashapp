@@ -13,6 +13,7 @@ export function SubscriberCard({ subscriber, ...props }: IProps) {
       templateColumns=".25fr .75fr"
       alignItems="center"
       justifyContent="center"
+      justifyItems={['center', 'center', 'initial']}
       {...props}
     >
       {subscriber.foto !== "img/default-profile.png" ? (

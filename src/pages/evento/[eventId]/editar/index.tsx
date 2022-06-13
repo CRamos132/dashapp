@@ -33,7 +33,7 @@ export default function EditEventPage() {
         id: user.id,
         fidelidash: user.firebaseData?.fidelidash || ''
       }
-    })
+    }) as Required<IEvent>['inscritos']
 
     const actualSubscribers = eventData.inscritos || []
     const subscribers = [...actualSubscribers, ...fidelidashUsersParsed]
@@ -73,9 +73,7 @@ export default function EditEventPage() {
         const clean = docData.stagelist.replace(/<br>/g, "\r\n");
         docData.stagelist = clean
       }
-      // if(docData?.tempo) {
-      //   docData.tempo = new Date(docData.tempo)
-      // }
+      docData.inscritos = docData.inscritos || []
       setEventData(docData)
     }
   }
@@ -83,7 +81,7 @@ export default function EditEventPage() {
   useEffect(() => {
     getEvent()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [asPath])
+  }, [eventId])
 
   const handleChange = (e: any) => {
     const newEventData = { ...eventData, [e.target.name]: e.target.value }
@@ -198,7 +196,7 @@ export default function EditEventPage() {
             <Input id='org' name='org' type='text' disabled defaultValue={eventData?.org || ''} />
           </FormControl>
           <Flex justifyContent="center" width="100%">
-            <SubscribersList isManageable subscribers={eventData.inscritos || []} addFidelidashUsers={addFidelidashUsers} />
+            <SubscribersList isManageable subscribers={eventData.inscritos} addFidelidashUsers={addFidelidashUsers} />
           </Flex>
           <Button colorScheme='blue' type='submit'>Editar</Button>
         </Flex>
