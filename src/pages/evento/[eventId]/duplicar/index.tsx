@@ -14,18 +14,22 @@ import { firestore } from "../../../../lib/firebase";
 import PageWrapper from "../../../../components/PageWrapper";
 import { SubscribersList } from "../../../../components/SubscribersList";
 import { IEvent } from "../../../../interfaces/Event";
-import { getUsers } from "../../../../lib/firebase/UsersRepository";
+import { useUsers } from "../../../../lib/firebase/UsersRepository";
 
 export default function DuplicateEventPage() {
   const [eventData, setEventData] = useState<IEvent>({} as IEvent)
+
+
   const router = useRouter()
   const toast = useToast()
+  const { data: fidelidashUsers } = useUsers()
+
   const { asPath } = router
   const eventId = asPath.split('/')[2]
 
   async function addFidelidashUsers() {
-    const fidelidashUsers = await getUsers({orderBy: "fidelidash"})
-    
+    if (!fidelidashUsers) return
+
     const fidelidashUsersParsed = fidelidashUsers.map((user) => {
       return {
         nome: user.firebaseData?.apelido || '',
@@ -43,22 +47,22 @@ export default function DuplicateEventPage() {
     const ids: any[] = []
     const deduplicatedSubscribers = subscribers.filter((subscriber) => {
       const alreadyExists = ids.includes(subscriber.id)
-      if(alreadyExists) {
+      if (alreadyExists) {
         return false
       }
 
       ids.push(subscriber.id)
       return subscriber
     })
-    
-    setEventData({...eventData, inscritos: deduplicatedSubscribers})
+
+    setEventData({ ...eventData, inscritos: deduplicatedSubscribers })
   }
-  
+
   const getEvent = async () => {
     if (!eventId || eventId === '[eventId]') return
     const docRef = doc(firestore, "eventos", eventId as string);
     const docSnap = await getDoc(docRef);
-  
+
     if (docSnap) {
       const docData = docSnap.data() as any
       if (docData.sobre) {
@@ -92,16 +96,16 @@ export default function DuplicateEventPage() {
     const formData = new FormData(e.target)
     const { tempo, limite } = Object.fromEntries(formData)
     const submitData = eventData
-    if(tempo) {
+    if (tempo) {
       submitData.tempo = Date.parse(tempo as string);
     }
-    if(limite) {
+    if (limite) {
       submitData.limite = Date.parse(limite as string);
     }
     submitData.sobre = submitData.sobre.replaceAll(/\r?\n/g, "<br>")
     submitData.stagelist = submitData.stagelist.replaceAll(/\r?\n/g, "<br>")
     submitData.regras = submitData.regras.replaceAll(/\r?\n/g, "<br>")
-    if(submitData.socialMediaText) {
+    if (submitData.socialMediaText) {
       submitData.socialMediaText = encodeURIComponent(submitData.socialMediaText)
     }
     addDoc(collection(firestore, "eventos"), {
@@ -180,7 +184,7 @@ export default function DuplicateEventPage() {
             <Textarea
               id="socialMediaText"
               name="socialMediaText"
-              maxLength={280} 
+              maxLength={280}
               value={eventData?.socialMediaText || ''}
               onChange={handleChange}
             />

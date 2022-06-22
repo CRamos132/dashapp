@@ -6,6 +6,7 @@ interface IProps extends GridProps {
 }
 
 export function SubscriberCard({ subscriber, ...props }: IProps) {
+  console.log("🚀 ~ subscriber", subscriber)
   return (
     <Grid
       width="100%"
