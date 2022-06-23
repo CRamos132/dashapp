@@ -1,11 +1,11 @@
 import { Box, Button, Flex } from "@chakra-ui/react";
 import Link from "next/link";
 
-import { Event } from "../../types";
+import { IEvent } from "../../interfaces/Event"
 import EventCard from "../EventCard";
 
 interface IProps {
-  events: Event[];
+  events: IEvent[];
   title: string;
   isLoading: boolean;
 }

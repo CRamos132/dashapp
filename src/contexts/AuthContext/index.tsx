@@ -11,7 +11,7 @@ import {
 import { addDoc, collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { auth, firestore } from '../../lib/firebase';
 import { useRouter } from 'next/router';
-import { AditionalUserData } from '../../types';
+import { IAditionalUserData } from '../../interfaces/User';
 import { IAccountRegisterInput } from './auth-types'
 import { useToast } from '@chakra-ui/react';
 
@@ -22,7 +22,7 @@ interface TAuthContext {
   recoverPassword: (email: string) => void;
   isAdmin: boolean;
   logout: () => void;
-  aditionalData: AditionalUserData | null;
+  aditionalData: IAditionalUserData | null;
 }
 
 const AuthContext = createContext<TAuthContext>({
@@ -37,7 +37,7 @@ const AuthContext = createContext<TAuthContext>({
 
 function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
-  const [aditionalUserInfo, setAditionalUserInfo] = useState<AditionalUserData | null>(null)
+  const [aditionalUserInfo, setAditionalUserInfo] = useState<IAditionalUserData | null>(null)
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
 
   const toast = useToast()
@@ -186,7 +186,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
     const docRef = doc(firestore, "users", user.uid);
     const docSnap = await getDoc(docRef);
     const parsedData = docSnap.data()
-    setAditionalUserInfo(parsedData as AditionalUserData)
+    setAditionalUserInfo(parsedData as IAditionalUserData)
   }
 
   useEffect(() => {

@@ -3,7 +3,7 @@ import Head from 'next/head'
 import { useQuery } from 'react-query'
 import { collection, query, getDocs, orderBy, limit, where } from "firebase/firestore";
 
-import { Event } from '../types';
+import { IEvent } from '../interfaces/Event';
 import { firestore } from '../lib/firebase';
 import PageWrapper from '../components/PageWrapper'
 import EventsList from '../components/EventsList';
@@ -14,10 +14,10 @@ const Home: NextPage = () => {
     const now = new Date();
     const q = query(collection(firestore, "eventos"), orderBy('tempo', 'asc'), limit(10), where("tempo", ">", Date.parse(now.toDateString())))
     const querySnapshot = await getDocs(q);
-    const events: Event[] = []
+    const events: IEvent[] = []
     querySnapshot.forEach((doc) => {
       const eventData = { id: doc.id, ...doc.data() }
-      events.push(eventData as Event)
+      events.push(eventData as IEvent)
     });
     return events
   })
@@ -26,10 +26,10 @@ const Home: NextPage = () => {
     const now = new Date();
     const q = query(collection(firestore, "eventos"), orderBy('tempo', 'desc'), limit(10), where("tempo", "<", Date.parse(now.toDateString())))
     const querySnapshot = await getDocs(q);
-    const events: Event[] = []
+    const events: IEvent[] = []
     querySnapshot.forEach((doc) => {
       const eventData = { id: doc.id, ...doc.data() }
-      events.push(eventData as Event)
+      events.push(eventData as IEvent)
     });
     return events
   })
