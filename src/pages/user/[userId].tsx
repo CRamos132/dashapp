@@ -61,10 +61,20 @@ export default function UserPage() {
 
   const isProfile = auth.user?.uid === userId;
 
+  if (isLoading) {
+    return (
+      <PageWrapper>
+        <p>...loading</p>
+      </PageWrapper>
+    );
+  }
+
   return (
     <PageWrapper>
-      {isLoading ? (
-        <p>...loading</p>
+      {!userData.id ? (
+        <Heading textAlign="center" mt="12">
+          Usuário não encontrado
+        </Heading>
       ) : (
         <Flex
           padding="24px"

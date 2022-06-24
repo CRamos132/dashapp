@@ -37,7 +37,7 @@ export async function getUsers({ orderBy }: IGetUsersArgs): Promise<IUser[]> {
 export async function getUserById(userId: string): Promise<IFirebaseUserData> {
   const docRef = doc(firestore, "users", userId as string);
   const docSnap = await getDoc(docRef);
-  return { id: docSnap.id, ...docSnap.data() } as IFirebaseUserData;
+  return { id: docSnap.data() && docSnap.id, ...docSnap.data() } as IFirebaseUserData;
 }
 
 interface IUpdateUserArgs {
