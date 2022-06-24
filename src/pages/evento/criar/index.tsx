@@ -30,7 +30,7 @@ export default function DuplicateEventPage() {
         id: user.id,
         fidelidash: user.firebaseData?.fidelidash || "",
       };
-    }) as Required<IEvent>['inscritos']
+    }) as Required<IEvent>["inscritos"];
 
     setEventData({ ...eventData, inscritos: fidelidashUsersParsed });
   }
@@ -45,17 +45,19 @@ export default function DuplicateEventPage() {
     const formData = new FormData(e.target);
     const { tempo, limite } = Object.fromEntries(formData);
     const submitData = eventData;
-    if(tempo) {
+    if (tempo) {
       submitData.tempo = Date.parse(tempo as string);
     }
-    if(limite) {
+    if (limite) {
       submitData.limite = Date.parse(limite as string);
     }
     submitData.sobre = submitData.sobre?.replaceAll(/\r?\n/g, "<br>");
     submitData.stagelist = submitData.stagelist?.replaceAll(/\r?\n/g, "<br>");
     submitData.regras = submitData.regras?.replaceAll(/\r?\n/g, "<br>");
-    if(submitData.socialMediaText) {
-      submitData.socialMediaText = encodeURIComponent(submitData.socialMediaText)
+    if (submitData.socialMediaText) {
+      submitData.socialMediaText = encodeURIComponent(
+        submitData.socialMediaText
+      );
     }
 
     addDoc(collection(firestore, "eventos"), {
@@ -187,12 +189,12 @@ export default function DuplicateEventPage() {
             />
           </FormControl>
           <FormControl>
-            <FormLabel htmlFor='socialMediaText'>Texto do tweet</FormLabel>
+            <FormLabel htmlFor="socialMediaText">Texto do tweet</FormLabel>
             <Textarea
               id="socialMediaText"
               name="socialMediaText"
-              maxLength={280} 
-              value={eventData?.socialMediaText || ''}
+              maxLength={280}
+              value={eventData?.socialMediaText || ""}
               onChange={handleChange}
             />
           </FormControl>
@@ -218,6 +220,7 @@ export default function DuplicateEventPage() {
           </FormControl>
           <Flex justifyContent="center" width="100%">
             <SubscribersList
+              eventId={eventData.id}
               isManageable
               subscribers={eventData.inscritos}
               addFidelidashUsers={addFidelidashUsers}
