@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { useRouter } from "next/router"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import { getDoc, doc, addDoc, collection } from "firebase/firestore";
 import {
   FormControl,
@@ -8,184 +8,261 @@ import {
   Flex,
   Textarea,
   Button,
-  useToast
+  useToast,
 } from "@chakra-ui/react";
 import { firestore } from "../../../../lib/firebase";
 import PageWrapper from "../../../../components/PageWrapper";
 import { SubscribersList } from "../../../../components/SubscribersList";
 import { IEvent } from "../../../../interfaces/Event";
 import { getUsers } from "../../../../lib/firebase/UsersRepository";
+import { getEventById } from "../../../../lib/firebase/EventRepository";
 
 export default function DuplicateEventPage() {
-  const [eventData, setEventData] = useState<IEvent>({} as IEvent)
-  const router = useRouter()
-  const toast = useToast()
-  const { asPath } = router
-  const eventId = asPath.split('/')[2]
+  const [eventData, setEventData] = useState<IEvent>({} as IEvent);
+  const router = useRouter();
+  const toast = useToast();
+  const { asPath } = router;
+  const eventId = asPath.split("/")[2];
 
   async function addFidelidashUsers() {
-    const fidelidashUsers = await getUsers({orderBy: "fidelidash"}) || []
-    
+    const fidelidashUsers = (await getUsers({ orderBy: "fidelidash" })) || [];
+
     const fidelidashUsersParsed = fidelidashUsers.map((user) => {
       return {
-        nome: user.firebaseData?.apelido || '',
-        foto: user.firebaseData?.foto || '',
+        nome: user.firebaseData?.apelido || "",
+        foto: user.firebaseData?.foto || "",
         id: user.id,
-        fidelidash: user.firebaseData?.fidelidash || ''
-      }
-    }) as Required<IEvent>['inscritos']
+        fidelidash: user.firebaseData?.fidelidash || "",
+      };
+    }) as Required<IEvent>["inscritos"];
 
-    const inscritos = [...fidelidashUsersParsed]
+    const inscritos = [...fidelidashUsersParsed];
 
-    setEventData({...eventData, inscritos})
+    setEventData({ ...eventData, inscritos });
   }
-  
+
   const getEvent = async () => {
-    if (!eventId || eventId === '[eventId]') return
-    const docRef = doc(firestore, "eventos", eventId as string);
-    const docSnap = await getDoc(docRef);
-    console.log({docSnap})
-    if (docSnap) {
-      const docData = docSnap.data() as any
-      if (docData.sobre) {
-        const clean = docData.sobre.replace(/<br>/g, "\r\n");
-        docData.sobre = clean
+    if (!eventId || eventId === "[eventId]") return;
+    const eventData = await getEventById(eventId);
+
+    if (eventData) {
+      if (eventData?.sobre) {
+        const clean = eventData.sobre.replace(/<br>/g, "\r\n");
+        eventData.sobre = clean;
       }
-      if (docData.regras) {
-        const clean = docData.regras.replace(/<br>/g, "\r\n");
-        docData.regras = clean
+      if (eventData?.regras) {
+        const clean = eventData.regras.replace(/<br>/g, "\r\n");
+        eventData.regras = clean;
       }
-      if (docData.stagelist) {
-        const clean = docData.stagelist.replace(/<br>/g, "\r\n");
-        docData.stagelist = clean
+      if (eventData?.stagelist) {
+        const clean = eventData.stagelist.replace(/<br>/g, "\r\n");
+        eventData.stagelist = clean;
       }
-      docData.inscritos = []
-      setEventData(docData)
+      eventData.inscritos = eventData.inscritos || [];
+      setEventData(eventData);
     }
-  }
+  };
 
   useEffect(() => {
-    getEvent()
+    getEvent();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [eventId])
+  }, [eventId]);
 
   const handleChange = (e: any) => {
-    const newEventData = { ...eventData, [e.target.name]: e.target.value }
-    setEventData(newEventData)
-  }
+    const newEventData = { ...eventData, [e.target.name]: e.target.value };
+    setEventData(newEventData);
+  };
 
   const handleSubmit = (e: any) => {
-    e.preventDefault()
-    const formData = new FormData(e.target)
-    const { tempo, limite } = Object.fromEntries(formData)
-    const submitData = eventData
-    if(tempo) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const { tempo, limite } = Object.fromEntries(formData);
+    const submitData = eventData;
+    if (tempo) {
       submitData.tempo = Date.parse(tempo as string);
     }
-    if(limite) {
+    if (limite) {
       submitData.limite = Date.parse(limite as string);
     }
-    submitData.sobre = submitData.sobre.replaceAll(/\r?\n/g, "<br>")
-    submitData.stagelist = submitData.stagelist.replaceAll(/\r?\n/g, "<br>")
-    submitData.regras = submitData.regras.replaceAll(/\r?\n/g, "<br>")
-    if(submitData.socialMediaText) {
-      submitData.socialMediaText = encodeURIComponent(submitData.socialMediaText)
+    submitData.sobre = submitData.sobre.replaceAll(/\r?\n/g, "<br>");
+    submitData.stagelist = submitData.stagelist.replaceAll(/\r?\n/g, "<br>");
+    submitData.regras = submitData.regras.replaceAll(/\r?\n/g, "<br>");
+    if (submitData.socialMediaText) {
+      submitData.socialMediaText = encodeURIComponent(
+        submitData.socialMediaText
+      );
     }
     addDoc(collection(firestore, "eventos"), {
-      ...submitData
+      ...submitData,
     })
-      .then(data => {
+      .then((data) => {
         toast({
-          title: 'Evento duplicado com sucesso.',
-          status: 'success',
+          title: "Evento duplicado com sucesso.",
+          status: "success",
           duration: 9000,
           isClosable: true,
-        })
+        });
       })
-      .catch(error => {
+      .catch((error) => {
         toast({
-          title: 'Algo deu errado.',
+          title: "Algo deu errado.",
           description: error,
-          status: 'error',
+          status: "error",
           duration: 9000,
           isClosable: true,
-        })
-      })
-  }
+        });
+      });
+  };
 
   return (
     <PageWrapper>
       <form onSubmit={handleSubmit}>
-        <Flex direction='column' width="70%" margin='50px auto' align='center' gridRowGap='24px'>
+        <Flex
+          direction="column"
+          width="70%"
+          margin="50px auto"
+          align="center"
+          gridRowGap="24px"
+        >
           <h1>Duplicar evento</h1>
           <FormControl>
-            <FormLabel htmlFor='titulo'>Título</FormLabel>
-            <Input id='titulo' name='titulo' type='text' value={eventData?.titulo || ''} onChange={handleChange} />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor='apelido'>Apelido</FormLabel>
-            <Input id='apelido' name='apelido' type='text' value={eventData?.apelido || ''} onChange={handleChange} />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor='tempo'>Data</FormLabel>
-            <Input id='tempo' name='tempo' type='datetime-local' />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor='limite'>Data limite</FormLabel>
-            <Input id='limite' name='limite' type='datetime-local' />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor='cidade'>Cidade</FormLabel>
-            <Input id='cidade' name='cidade' type='text' value={eventData?.cidade || ''} onChange={handleChange} />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor='uf'>UF</FormLabel>
-            <Input id='uf' name='uf' type='text' value={eventData?.uf || ''} onChange={handleChange} />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor='sobre'>Sobre</FormLabel>
-            <Textarea id='sobre' name='sobre' value={eventData?.sobre || ''} onChange={handleChange} />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor='regras'>Regras</FormLabel>
-            <Textarea id='regras' name='regras' value={eventData?.regras || ''} onChange={handleChange} />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor='stagelist'>Stagelist</FormLabel>
-            <Textarea id='stagelist' name='stagelist' value={eventData?.stagelist || ''} onChange={handleChange} />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor='bracket'>Bracket</FormLabel>
-            <Input id='bracket' name='bracket' type='text' value={eventData?.bracket || ''} onChange={handleChange} />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor='fb'>Link do FB</FormLabel>
-            <Input id='fb' name='fb' type='text' value={eventData?.fb || ''} onChange={handleChange} />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor='socialMediaText'>Texto do tweet</FormLabel>
-            <Textarea
-              id="socialMediaText"
-              name="socialMediaText"
-              maxLength={280} 
-              value={eventData?.socialMediaText || ''}
+            <FormLabel htmlFor="titulo">Título</FormLabel>
+            <Input
+              id="titulo"
+              name="titulo"
+              type="text"
+              value={eventData?.titulo || ""}
               onChange={handleChange}
             />
           </FormControl>
           <FormControl>
-            <FormLabel htmlFor='url'>URL</FormLabel>
-            <Input id='url' name='url' type='text' value={eventData?.url || ''} onChange={handleChange} />
+            <FormLabel htmlFor="apelido">Apelido</FormLabel>
+            <Input
+              id="apelido"
+              name="apelido"
+              type="text"
+              value={eventData?.apelido || ""}
+              onChange={handleChange}
+            />
           </FormControl>
           <FormControl>
-            <FormLabel htmlFor='org'>Org</FormLabel>
-            <Input id='org' name='org' type='text' disabled defaultValue={eventData?.org || ''} />
+            <FormLabel htmlFor="tempo">Data</FormLabel>
+            <Input id="tempo" name="tempo" type="datetime-local" />
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="limite">Data limite</FormLabel>
+            <Input id="limite" name="limite" type="datetime-local" />
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="cidade">Cidade</FormLabel>
+            <Input
+              id="cidade"
+              name="cidade"
+              type="text"
+              value={eventData?.cidade || ""}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="uf">UF</FormLabel>
+            <Input
+              id="uf"
+              name="uf"
+              type="text"
+              value={eventData?.uf || ""}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="sobre">Sobre</FormLabel>
+            <Textarea
+              id="sobre"
+              name="sobre"
+              value={eventData?.sobre || ""}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="regras">Regras</FormLabel>
+            <Textarea
+              id="regras"
+              name="regras"
+              value={eventData?.regras || ""}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="stagelist">Stagelist</FormLabel>
+            <Textarea
+              id="stagelist"
+              name="stagelist"
+              value={eventData?.stagelist || ""}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="bracket">Bracket</FormLabel>
+            <Input
+              id="bracket"
+              name="bracket"
+              type="text"
+              value={eventData?.bracket || ""}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="fb">Link do FB</FormLabel>
+            <Input
+              id="fb"
+              name="fb"
+              type="text"
+              value={eventData?.fb || ""}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="socialMediaText">Texto do tweet</FormLabel>
+            <Textarea
+              id="socialMediaText"
+              name="socialMediaText"
+              maxLength={280}
+              value={eventData?.socialMediaText || ""}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="url">URL</FormLabel>
+            <Input
+              id="url"
+              name="url"
+              type="text"
+              value={eventData?.url || ""}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="org">Org</FormLabel>
+            <Input
+              id="org"
+              name="org"
+              type="text"
+              disabled
+              defaultValue={eventData?.org || ""}
+            />
           </FormControl>
           <Flex justifyContent="center" width="100%">
-            <SubscribersList isManageable subscribers={eventData.inscritos} addFidelidashUsers={addFidelidashUsers} />
+            <SubscribersList
+              eventId={eventData.id}
+              isManageable
+              subscribers={eventData.inscritos}
+              addFidelidashUsers={addFidelidashUsers}
+            />
           </Flex>
-          <Button colorScheme='blue' type='submit'>Duplicar</Button>
+          <Button colorScheme="blue" type="submit">
+            Duplicar
+          </Button>
         </Flex>
       </form>
     </PageWrapper>
-  )
+  );
 }
