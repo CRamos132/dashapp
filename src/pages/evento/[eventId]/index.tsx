@@ -176,7 +176,40 @@ export default function EventPage() {
           backgroundColor="gray.300"
           borderRadius="12px"
           padding="12px"
+          position="relative"
         >
+          <Flex gap="4" position="absolute" right="5">
+            <CustomLink
+              background="gray.100"
+              textAlign="center"
+              borderRadius="6px"
+              padding="2"
+              paddingX="4"
+              fontWeight="bold"
+              color="black"
+              _hover={{
+                backgroundColor: "gray.200",
+              }}
+              href={`/evento/${eventId}/duplicar`}
+            >
+              Duplicar
+            </CustomLink>
+            <CustomLink
+              background="gray.100"
+              textAlign="center"
+              borderRadius="6px"
+              padding="2"
+              paddingX="4"
+              fontWeight="bold"
+              color="black"
+              _hover={{
+                backgroundColor: "gray.200",
+              }}
+              href={`/evento/${eventId}/editar`}
+            >
+              Editar
+            </CustomLink>
+          </Flex>
           <Box
             as="h1"
             fontSize="1.5rem"
@@ -184,6 +217,7 @@ export default function EventPage() {
             width="100%"
             textAlign="center"
             margin="12px 0"
+            mt={['14', '12', '12', '12','4']}
           >
             {data?.titulo}
           </Box>
@@ -262,7 +296,9 @@ export default function EventPage() {
                   <Button onClick={handleCopy}>
                     Copiar lista de jogadores
                   </Button>
-                ) : ''}
+                ) : (
+                  ""
+                )}
                 {!data?.inscritos?.find(
                   (user) => user.id === auth.user?.uid
                 ) ? (
