@@ -1,17 +1,21 @@
 import { Button, Flex, Grid } from "@chakra-ui/react";
-import { IEvent } from "../../interfaces/Event";
+import { IEvent, IEventSubscriber } from "../../interfaces/Event";
 import { SubscriberCard } from "./SubscriberCard";
 
 interface IProps {
+  eventId: string;
   subscribers: IEvent["inscritos"];
   isManageable?: boolean;
   addFidelidashUsers?: () => void;
+  removeSubscriber?: (someUser: IEventSubscriber | undefined) => void;
 }
 
 export function SubscribersList({
+  eventId,
   subscribers,
   isManageable = false,
   addFidelidashUsers,
+  removeSubscriber,
 }: IProps) {
   return (
     <Grid
@@ -38,7 +42,12 @@ export function SubscribersList({
         </Button>
       )}
       {subscribers?.map((user) => (
-        <SubscriberCard key={user.id} subscriber={user} />
+        <SubscriberCard
+          eventId={eventId}
+          key={user.id}
+          subscriber={user}
+          removeSubscriber={removeSubscriber}
+        />
       ))}
     </Grid>
   );

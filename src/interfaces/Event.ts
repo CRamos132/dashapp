@@ -2,7 +2,7 @@ import { FidelidashRanks } from "./User";
 
 export interface IEventSubscriber {
   foto?: string;
-  id?: string;
+  id: string;
   fidelidash?: FidelidashRanks;
   nome?: string;
 }

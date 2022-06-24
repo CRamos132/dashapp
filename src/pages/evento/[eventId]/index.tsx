@@ -10,153 +10,189 @@ import {
   AccordionButton,
   AccordionPanel,
   AccordionIcon,
-  Image
+  Image,
 } from "@chakra-ui/react";
-import { doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+} from "firebase/firestore";
 
 import PageWrapper from "../../../components/PageWrapper";
 import { firestore } from "../../../lib/firebase";
-import { IEvent } from "../../../interfaces/Event";
+import { IEvent, IEventSubscriber } from "../../../interfaces/Event";
 import convertToCSV from "../../../utils/convertToCSV";
 import { useAuth } from "../../../contexts/AuthContext";
 import { SubscribersList } from "../../../components/SubscribersList";
 import { CustomLink } from "../../../components/CustomLink";
+import {
+  getEventById,
+} from "../../../lib/firebase/EventRepository";
 
-function EventInformation({ title, information }: { title: string, information: string }) {
+function EventInformation({
+  title,
+  information,
+}: {
+  title: string;
+  information: string;
+}) {
   return (
-    <Accordion allowMultiple width='80%' maxWidth='300px'>
+    <Accordion allowMultiple width="80%" maxWidth="300px">
       <AccordionItem>
-        <Button as='h2' width='100%'>
+        <Button as="h2" width="100%">
           <AccordionButton>
-            <Box flex='1' textAlign='center' >
+            <Box flex="1" textAlign="center">
               {title}
             </Box>
             <AccordionIcon />
           </AccordionButton>
         </Button>
-        <AccordionPanel padding='32px' backgroundColor='white' borderRadius='12px'>
-          {information.split("<br>").map((text, index) => <p key={`${text}-${index}`}>{text}</p>)}
+        <AccordionPanel
+          padding="32px"
+          backgroundColor="white"
+          borderRadius="12px"
+        >
+          {information.split("<br>").map((text, index) => (
+            <p key={`${text}-${index}`}>{text}</p>
+          ))}
         </AccordionPanel>
       </AccordionItem>
     </Accordion>
-  )
+  );
 }
 
 export default function EventPage() {
   const auth = useAuth();
-  const toast = useToast()
-  const router = useRouter()
-  const { eventId } = router.query
+  const toast = useToast();
+  const router = useRouter();
+  const { eventId } = router.query;
 
-  const { isLoading, data, refetch } = useQuery(`event-${eventId}`, async () => {
-    const docRef = doc(firestore, "eventos", eventId as string);
-    const docSnap = await getDoc(docRef);
-    return docSnap.data() as IEvent
-  })
+  const { isLoading, data, refetch } = useQuery(
+    `event-${eventId}`,
+    async () => {
+      return getEventById(eventId as string);
+    }
+  );
 
   const handleCopy = () => {
     if (data?.inscritos) {
       const userList = data?.inscritos.map((user) => {
-        return { jogador: user.nome }
-      })
-      const csvData = convertToCSV(userList)
-      navigator.clipboard.writeText(csvData)
-        .then(() => {
-          toast({
-            title: 'Lista copiada.',
-            status: 'success',
-            duration: 9000,
-            isClosable: true,
-          })
-        })
+        return { jogador: user.nome };
+      });
+      const csvData = convertToCSV(userList);
+      navigator.clipboard.writeText(csvData).then(() => {
+        toast({
+          title: "Lista copiada.",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        });
+      });
     }
-  }
+  };
 
   const handleAdd = () => {
     const user = {
       id: auth.user?.uid,
       nome: auth.user?.displayName,
       foto: auth.aditionalData?.foto,
-      ...(auth.aditionalData?.fidelidash && { fidelidash: auth.aditionalData?.fidelidash })
-    }
+      ...(auth.aditionalData?.fidelidash && {
+        fidelidash: auth.aditionalData?.fidelidash,
+      }),
+    };
     updateDoc(doc(firestore, "eventos", eventId as string), {
       inscritos: arrayUnion(user),
     })
-      .then(data => {
-        refetch()
+      .then((data) => {
+        refetch();
         toast({
-          title: 'Inscrição realizada com sucesso.',
-          status: 'success',
+          title: "Inscrição realizada com sucesso.",
+          status: "success",
           duration: 9000,
           isClosable: true,
-        })
+        });
       })
-      .catch(error => {
+      .catch((error) => {
         toast({
-          title: 'Algo deu errado.',
+          title: "Algo deu errado.",
           description: error,
-          status: 'error',
+          status: "error",
           duration: 9000,
           isClosable: true,
-        })
-      })
-  }
+        });
+      });
+  };
 
-  const handleRemove = () => {
-    const user = {
+  const handleRemove = (someUser: IEventSubscriber | undefined) => {
+    const user = someUser && auth.isAdmin ? someUser : {
       id: auth.user?.uid,
       nome: auth.user?.displayName,
       foto: auth.aditionalData?.foto,
-      ...(auth.aditionalData?.fidelidash && { fidelidash: auth.aditionalData?.fidelidash })
-    }
+      ...(auth.aditionalData?.fidelidash && {
+        fidelidash: auth.aditionalData?.fidelidash,
+      }),
+    };
     updateDoc(doc(firestore, "eventos", eventId as string), {
       inscritos: arrayRemove(user),
     })
-      .then(data => {
-        refetch()
+      .then((data) => {
+        refetch();
         toast({
-          title: 'Inscrição cancelada com sucesso.',
-          status: 'success',
+          title: "Inscrição cancelada com sucesso.",
+          status: "success",
           duration: 9000,
           isClosable: true,
-        })
+        });
       })
-      .catch(error => {
+      .catch((error) => {
         toast({
-          title: 'Algo deu errado.',
+          title: "Algo deu errado.",
           description: error,
-          status: 'error',
+          status: "error",
           duration: 9000,
           isClosable: true,
-        })
-      })
+        });
+      });
+  };
+
+  const defaultSocialMediaText = `Eu%20me%20registrei%20em%20${data?.titulo}`;
+
+  if (isLoading || !data) {
+    <p>Carregando...</p>;
   }
 
-  const defaultSocialMediaText = `Eu%20me%20registrei%20em%20${data?.titulo}`
-  
-  if (isLoading || !data) {
-    <p>Carregando...</p>
-  }
-  
   return (
     <PageWrapper>
-      <Box padding='24px'>
-        <Flex direction='column' backgroundColor='gray.300' borderRadius='12px' padding='12px'>
+      <Box padding="24px">
+        <Flex
+          direction="column"
+          backgroundColor="gray.300"
+          borderRadius="12px"
+          padding="12px"
+        >
           <Box
-            as='h1'
-            fontSize='1.5rem'
-            fontWeight='bold'
-            width='100%'
-            textAlign='center'
-            margin='12px 0'
+            as="h1"
+            fontSize="1.5rem"
+            fontWeight="bold"
+            width="100%"
+            textAlign="center"
+            margin="12px 0"
           >
             {data?.titulo}
           </Box>
-          <Flex direction='column' gridRowGap='8px' alignItems='center' width='100%' margin='12px auto'>
-            <CustomLink 
-              href={
-                `https://twitter.com/intent/tweet?via=TeamDASHBR&text=${data?.socialMediaText || defaultSocialMediaText}`
-              }
+          <Flex
+            direction="column"
+            gridRowGap="8px"
+            alignItems="center"
+            width="100%"
+            margin="12px auto"
+          >
+            <CustomLink
+              href={`https://twitter.com/intent/tweet?via=TeamDASHBR&text=${
+                data?.socialMediaText || defaultSocialMediaText
+              }`}
               width="100%"
               background="gray.100"
               textAlign="center"
@@ -170,29 +206,63 @@ export default function EventPage() {
             >
               Tweet
             </CustomLink>
-            {data?.regras && <EventInformation information={data.regras} title='Regras' />}
-            {data?.stagelist && <EventInformation information={data.stagelist} title='Stagelist' />}
-            {data?.bracket && <Button as='a' href={data.bracket} target='_blank' rel='noopener' width='80%' maxWidth='300px'>Bracket</Button>}
+            {data?.regras && (
+              <EventInformation information={data.regras} title="Regras" />
+            )}
+            {data?.stagelist && (
+              <EventInformation
+                information={data.stagelist}
+                title="Stagelist"
+              />
+            )}
+            {data?.bracket && (
+              <Button
+                as="a"
+                href={data.bracket}
+                target="_blank"
+                rel="noopener"
+                width="80%"
+                maxWidth="300px"
+              >
+                Bracket
+              </Button>
+            )}
           </Flex>
-          {data?.inscricao === 'local' ? (
+          {data?.inscricao === "local" ? (
             <>
-              <Box as='h2' fontSize='1.3rem' width='100%' textAlign='center' fontWeight='bold' margin='12px 0 4px'>Lista de jogadores</Box>
-              <Box as='h3' fontSize='1.1rem' width='100%' textAlign='center' fontWeight='bold' margin='8px 0'>{data?.inscritos?.length} Inscritos</Box>
-              <Flex direction='column' alignItems='center' gridRowGap='8px'>
-                {
-                  auth.isAdmin ? (
-                    <Button onClick={handleCopy}>
-                      Copiar lista de jogadores
-                    </Button>
-                  ) : (null)
-                }
-                {!data?.inscritos?.find((user) => user.id === auth.user?.uid) ? (
-                  <Button onClick={handleAdd}>
-                    Me inscrever
-                  </Button>) : (
-                  <Button onClick={handleRemove}>
-                    Cancelar inscrição
-                  </Button>)}
+              <Box
+                as="h2"
+                fontSize="1.3rem"
+                width="100%"
+                textAlign="center"
+                fontWeight="bold"
+                margin="12px 0 4px"
+              >
+                Lista de jogadores
+              </Box>
+              <Box
+                as="h3"
+                fontSize="1.1rem"
+                width="100%"
+                textAlign="center"
+                fontWeight="bold"
+                margin="8px 0"
+              >
+                {data?.inscritos?.length} Inscritos
+              </Box>
+              <Flex direction="column" alignItems="center" gridRowGap="8px">
+                {auth.isAdmin ? (
+                  <Button onClick={handleCopy}>
+                    Copiar lista de jogadores
+                  </Button>
+                ) : null}
+                {!data?.inscritos?.find(
+                  (user) => user.id === auth.user?.uid
+                ) ? (
+                  <Button onClick={handleAdd}>Me inscrever</Button>
+                ) : (
+                  <Button onClick={() => handleRemove}>Cancelar inscrição</Button>
+                )}
                 {/* {data?.inscritos?.map((user) => {
                   return (
                     <Flex key={user.id} direction='row' alignItems='center' gridColumnGap='8px'>
@@ -204,13 +274,23 @@ export default function EventPage() {
                   )
                 })} */}
                 {data?.inscritos && (
-                  <SubscribersList subscribers={data.inscritos}></SubscribersList>
+                  <SubscribersList
+                    eventId={data.id}
+                    subscribers={data.inscritos}
+                    removeSubscriber={
+                      auth.isAdmin ? handleRemove : undefined
+                    }
+                  ></SubscribersList>
                 )}
               </Flex>
             </>
-          ) : (<Button as='a' href={data?.bracket} target='_blank' rel='noopener'>Ir para o Smash.gg</Button>)}
+          ) : (
+            <Button as="a" href={data?.bracket} target="_blank" rel="noopener">
+              Ir para o Smash.gg
+            </Button>
+          )}
         </Flex>
       </Box>
     </PageWrapper>
-  )
+  );
 }
