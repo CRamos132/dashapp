@@ -53,7 +53,10 @@ export function SubscriberCard({
           <Button
             position="absolute"
             right="0"
-            onClick={() => removeSubscriber(subscriber)}
+            onClick={(e: any) => {
+              e.preventDefault()
+              removeSubscriber(subscriber);
+            }}
           >
             X
           </Button>

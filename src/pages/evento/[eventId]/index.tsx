@@ -27,9 +27,7 @@ import convertToCSV from "../../../utils/convertToCSV";
 import { useAuth } from "../../../contexts/AuthContext";
 import { SubscribersList } from "../../../components/SubscribersList";
 import { CustomLink } from "../../../components/CustomLink";
-import {
-  getEventById,
-} from "../../../lib/firebase/EventRepository";
+import { getEventById } from "../../../lib/firebase/EventRepository";
 
 function EventInformation({
   title,
@@ -96,7 +94,7 @@ export default function EventPage() {
   const handleAdd = () => {
     const user = {
       id: auth.user?.uid,
-      nome: auth.user?.displayName,
+      nome: auth.aditionalData?.apelido || auth.user?.displayName,
       foto: auth.aditionalData?.foto,
       ...(auth.aditionalData?.fidelidash && {
         fidelidash: auth.aditionalData?.fidelidash,
@@ -126,14 +124,17 @@ export default function EventPage() {
   };
 
   const handleRemove = (someUser: IEventSubscriber | undefined) => {
-    const user = someUser && auth.isAdmin ? someUser : {
-      id: auth.user?.uid,
-      nome: auth.user?.displayName,
-      foto: auth.aditionalData?.foto,
-      ...(auth.aditionalData?.fidelidash && {
-        fidelidash: auth.aditionalData?.fidelidash,
-      }),
-    };
+    const user =
+      someUser && auth.isAdmin
+        ? someUser
+        : {
+            id: auth.user?.uid,
+            nome: auth.user?.displayName,
+            foto: auth.aditionalData?.foto,
+            ...(auth.aditionalData?.fidelidash && {
+              fidelidash: auth.aditionalData?.fidelidash,
+            }),
+          };
     updateDoc(doc(firestore, "eventos", eventId as string), {
       inscritos: arrayRemove(user),
     })
@@ -163,6 +164,10 @@ export default function EventPage() {
     <p>Carregando...</p>;
   }
 
+  const isUserSubscribedToTheEvent = data?.inscritos?.find(
+    (u) => u.id === auth.user?.uid
+  );
+
   return (
     <PageWrapper>
       <Box padding="24px">
@@ -189,23 +194,25 @@ export default function EventPage() {
             width="100%"
             margin="12px auto"
           >
-            <CustomLink
-              href={`https://twitter.com/intent/tweet?via=TeamDASHBR&text=${
-                data?.socialMediaText || defaultSocialMediaText
-              }`}
-              width="100%"
-              background="gray.100"
-              textAlign="center"
-              borderRadius="6px"
-              padding="6px"
-              fontWeight="bold"
-              color="black"
-              _hover={{
-                backgroundColor: "gray.200",
-              }}
-            >
-              Tweet
-            </CustomLink>
+            {isUserSubscribedToTheEvent && (
+              <CustomLink
+                href={`https://twitter.com/intent/tweet?via=TeamDASHBR&text=${
+                  data?.socialMediaText || defaultSocialMediaText
+                }`}
+                width="100%"
+                background="gray.100"
+                textAlign="center"
+                borderRadius="6px"
+                padding="6px"
+                fontWeight="bold"
+                color="black"
+                _hover={{
+                  backgroundColor: "gray.200",
+                }}
+              >
+                Tweet
+              </CustomLink>
+            )}
             {data?.regras && (
               <EventInformation information={data.regras} title="Regras" />
             )}
@@ -255,13 +262,15 @@ export default function EventPage() {
                   <Button onClick={handleCopy}>
                     Copiar lista de jogadores
                   </Button>
-                ) : null}
+                ) : ''}
                 {!data?.inscritos?.find(
                   (user) => user.id === auth.user?.uid
                 ) ? (
                   <Button onClick={handleAdd}>Me inscrever</Button>
                 ) : (
-                  <Button onClick={() => handleRemove}>Cancelar inscrição</Button>
+                  <Button onClick={() => handleRemove}>
+                    Cancelar inscrição
+                  </Button>
                 )}
                 {/* {data?.inscritos?.map((user) => {
                   return (
@@ -277,9 +286,7 @@ export default function EventPage() {
                   <SubscribersList
                     eventId={data.id}
                     subscribers={data.inscritos}
-                    removeSubscriber={
-                      auth.isAdmin ? handleRemove : undefined
-                    }
+                    removeSubscriber={auth.isAdmin ? handleRemove : undefined}
                   ></SubscribersList>
                 )}
               </Flex>
