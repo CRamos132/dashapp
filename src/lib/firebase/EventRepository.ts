@@ -14,5 +14,5 @@ type eventId = string;
 export async function getEventById(eventId: eventId): Promise<IEvent> {
   const eventDocRef = doc(firestore, "eventos", eventId as string);
   const eventDocSnap = await getDoc(eventDocRef);
-  return { id: eventDocSnap.id, ...eventDocSnap.data() } as IEvent;
+  return { id: eventDocSnap.data() && eventDocSnap.id, ...eventDocSnap.data() } as IEvent;
 }

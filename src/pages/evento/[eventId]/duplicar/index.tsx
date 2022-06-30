@@ -58,7 +58,7 @@ export default function DuplicateEventPage() {
         const clean = eventData.stagelist.replace(/<br>/g, "\r\n");
         eventData.stagelist = clean;
       }
-      eventData.inscritos = eventData.inscritos || [];
+      eventData.inscritos = [];
       setEventData(eventData);
     }
   };

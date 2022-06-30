@@ -38,7 +38,7 @@ function MenuContent() {
         ) : null}
       </Flex>
       <CustomLink
-        href={auth.user ? "/profile" : "/login"}
+        href={auth.user ? `/user/${auth.user.uid}` : "/login"}
         color="initial"
         _hover={{ color: "initial" }}
       >
