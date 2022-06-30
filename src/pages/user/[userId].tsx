@@ -3,7 +3,7 @@ import { Button, Flex, Grid, Heading, useToast } from "@chakra-ui/react";
 
 import PageWrapper from "../../components/PageWrapper";
 import { useAuth } from "../../contexts/AuthContext";
-import { UserPicture } from "./components/UserImage";
+import { UserPicture } from "../../components/UserImage";
 import { FieldText } from "../../components/FieldText";
 import { IFirebaseUserData } from "../../interfaces/User";
 import { useState } from "react";
