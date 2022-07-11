@@ -247,11 +247,11 @@ export default function EventPage() {
                 Tweet
               </CustomLink>
             )}
-            {data?.local && (
-              <EventInformation information={data.local} title="Local" />
-            )}
             {data?.regras && (
               <EventInformation information={data.regras} title="Regras" />
+            )}
+            {data?.local && (
+              <EventInformation information={data.local} title="Local" />
             )}
             {data?.stagelist && (
               <EventInformation
