@@ -217,7 +217,7 @@ export default function EventPage() {
             width="100%"
             textAlign="center"
             margin="12px 0"
-            mt={['14', '12', '12', '12','4']}
+            mt={["14", "12", "12", "12", "4"]}
           >
             {data?.titulo}
           </Box>
@@ -246,6 +246,9 @@ export default function EventPage() {
               >
                 Tweet
               </CustomLink>
+            )}
+            {data?.local && (
+              <EventInformation information={data.local} title="Local" />
             )}
             {data?.regras && (
               <EventInformation information={data.regras} title="Regras" />

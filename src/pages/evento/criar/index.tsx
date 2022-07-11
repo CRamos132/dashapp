@@ -51,6 +51,7 @@ export default function DuplicateEventPage() {
     if (limite) {
       submitData.limite = Date.parse(limite as string);
     }
+    submitData.local = submitData.local?.replaceAll(/\r?\n/g, "<br>");
     submitData.sobre = submitData.sobre?.replaceAll(/\r?\n/g, "<br>");
     submitData.stagelist = submitData.stagelist?.replaceAll(/\r?\n/g, "<br>");
     submitData.regras = submitData.regras?.replaceAll(/\r?\n/g, "<br>");
@@ -138,6 +139,15 @@ export default function DuplicateEventPage() {
               name="uf"
               type="text"
               value={eventData?.uf || ""}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="local">Local</FormLabel>
+            <Textarea
+              id="local"
+              name="local"
+              value={eventData?.local || ""}
               onChange={handleChange}
             />
           </FormControl>

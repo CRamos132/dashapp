@@ -59,6 +59,10 @@ export default function EditEventPage() {
     const eventData = await getEventById(eventId);
 
     if (eventData) {
+      if (eventData?.local) {
+        const clean = eventData.local.replace(/<br>/g, "\r\n");
+        eventData.local = clean;
+      }
       if (eventData?.sobre) {
         const clean = eventData.sobre.replace(/<br>/g, "\r\n");
         eventData.sobre = clean;
@@ -184,6 +188,15 @@ export default function EditEventPage() {
               name="uf"
               type="text"
               value={eventData?.uf || ""}
+              onChange={handleChange}
+            />
+          </FormControl>
+          <FormControl>
+            <FormLabel htmlFor="sobre">Local</FormLabel>
+            <Textarea
+              id="local"
+              name="local"
+              value={eventData?.local || ""}
               onChange={handleChange}
             />
           </FormControl>

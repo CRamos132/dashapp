@@ -24,6 +24,7 @@ export interface IEvent {
   limite: number;
   org: string;
   regras: string;
+  local?: string;
   sobre: string;
   stagelist: string;
   tempo: number;
