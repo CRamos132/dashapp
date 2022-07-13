@@ -74,6 +74,7 @@ export default function DuplicateEventPage() {
 
   const handleChange = (e: any) => {
     const newEventData = { ...eventData, [e.target.name]: e.target.value };
+    console.log(newEventData)
     setEventData(newEventData);
   };
 
@@ -81,7 +82,8 @@ export default function DuplicateEventPage() {
     e.preventDefault();
     const formData = new FormData(e.target);
     const { tempo, limite } = Object.fromEntries(formData);
-    const submitData = eventData;
+    const {id: _, ...submitData} = eventData;
+
     if (tempo) {
       submitData.tempo = Date.parse(tempo as string);
     }
