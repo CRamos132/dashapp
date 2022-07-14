@@ -74,21 +74,18 @@ export default function DuplicateEventPage() {
 
   const handleChange = (e: any) => {
     const newEventData = { ...eventData, [e.target.name]: e.target.value };
-    console.log(newEventData)
     setEventData(newEventData);
   };
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const { tempo, limite } = Object.fromEntries(formData);
-    const {id: _, ...submitData} = eventData;
+    const { id: _, ...submitData } = eventData;
 
-    if (tempo) {
-      submitData.tempo = Date.parse(tempo as string);
+    if (submitData.tempo && typeof submitData.tempo !== "number") {
+      submitData.tempo = Date.parse(String(submitData.tempo) as string);
     }
-    if (limite) {
-      submitData.limite = Date.parse(limite as string);
+    if (submitData.limite && typeof submitData.limite !== "number") {
+      submitData.limite = Date.parse(String(submitData.limite) as string);
     }
     submitData.sobre = submitData.sobre.replaceAll(/\r?\n/g, "<br>");
     submitData.stagelist = submitData.stagelist.replaceAll(/\r?\n/g, "<br>");
@@ -153,11 +150,31 @@ export default function DuplicateEventPage() {
           </FormControl>
           <FormControl>
             <FormLabel htmlFor="tempo">Data</FormLabel>
-            <Input id="tempo" name="tempo" type="datetime-local" />
+            <Input
+              id="tempo"
+              name="tempo"
+              type="datetime-local"
+              value={
+                (eventData.tempo &&
+                  new Date(eventData.tempo).toISOString().split("Z")[0]) ||
+                ""
+              }
+              onChange={handleChange}
+            />
           </FormControl>
           <FormControl>
             <FormLabel htmlFor="limite">Data limite</FormLabel>
-            <Input id="limite" name="limite" type="datetime-local" />
+            <Input
+              id="limite"
+              name="limite"
+              type="datetime-local"
+              value={
+                (eventData.limite &&
+                  new Date(eventData.limite).toISOString().split("Z")[0]) ||
+                ""
+              }
+              onChange={handleChange}
+            />
           </FormControl>
           <FormControl>
             <FormLabel htmlFor="cidade">Cidade</FormLabel>

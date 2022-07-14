@@ -10,7 +10,7 @@ export default function DateTest() {
   }
   return (
     <PageWrapper>
-      <Input type='datetime-local' onChange={(e) => setDate(e.target.value)} value={date} />
+      <Input type='date' onChange={(e: any) => setDate(e.target.value)} value={date} />
       <Button onClick={test}>Vamo vê</Button>
     </PageWrapper>
   )
