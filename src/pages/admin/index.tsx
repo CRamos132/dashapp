@@ -15,6 +15,11 @@ export default function AdminPage() {
           Gerenciar Fidelidash
         </Button>
       </Link>
+      <Link href='/evento/criar' passHref>
+        <Button>
+          Criar evento
+        </Button>
+      </Link>
     </PageWrapper>
   )
 }

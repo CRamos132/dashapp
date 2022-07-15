@@ -8,6 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { ChangeEventHandler } from "react";
 import { IEvent, IEventSubscriber } from "../../interfaces/Event";
+import { capitalizeFirstLetter } from "../../utils/string";
 import { SubscribersList } from "../SubscribersList";
 
 interface IProps {
@@ -18,6 +19,8 @@ interface IProps {
 }
 
 export default function EventForm({ eventData, handleChange, addFidelidashUsers, handleRemoveFidelidash }: IProps) {
+  const location = window.location.pathname.split('/')
+  const locationName = capitalizeFirstLetter(location[location.length - 1])
   return (
     <Flex
       direction="column"
@@ -26,7 +29,7 @@ export default function EventForm({ eventData, handleChange, addFidelidashUsers,
       align="center"
       gridRowGap="24px"
     >
-      <h1>Editar evento</h1>
+      <h1>{locationName} evento</h1>
       <FormControl>
         <FormLabel htmlFor="titulo">Título</FormLabel>
         <Input
