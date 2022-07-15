@@ -19,7 +19,7 @@ interface IProps {
 }
 
 export default function EventForm({ eventData, handleChange, addFidelidashUsers, handleRemoveFidelidash }: IProps) {
-  const location = window.location.pathname.split('/')
+  const location = window?.location.pathname.split('/')
   const locationName = capitalizeFirstLetter(location[location.length - 1])
   return (
     <Flex
