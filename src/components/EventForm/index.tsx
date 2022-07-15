@@ -53,7 +53,7 @@ export default function EventForm({ eventData, handleChange, addFidelidashUsers,
         <Input
           id="tempo"
           name="tempo"
-          type="datetime-local"
+          type="date"
           value={
             (eventData.tempo &&
               new Date(eventData.tempo).toISOString().split("Z")[0]) ||
@@ -67,7 +67,7 @@ export default function EventForm({ eventData, handleChange, addFidelidashUsers,
         <Input
           id="limite"
           name="limite"
-          type="datetime-local"
+          type="datetime"
           value={
             (eventData.limite &&
               new Date(eventData.limite).toISOString().split("Z")[0]) ||
