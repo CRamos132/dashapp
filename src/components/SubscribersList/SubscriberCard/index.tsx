@@ -6,7 +6,7 @@ import { CustomLink } from "../../CustomLink";
 interface IProps extends GridProps {
   eventId: string;
   subscriber: IEventSubscriber;
-  removeSubscriber?: (someUser: IEventSubscriber | undefined) => void;
+  removeSubscriber?: (someUser?: IEventSubscriber) => void;
 }
 
 export function SubscriberCard({
