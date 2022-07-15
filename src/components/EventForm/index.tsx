@@ -4,8 +4,7 @@ import {
   Input,
   Flex,
   Textarea,
-  Button,
-  useToast,
+  Button
 } from "@chakra-ui/react";
 import { ChangeEventHandler } from "react";
 import { IEvent, IEventSubscriber } from "../../interfaces/Event";
