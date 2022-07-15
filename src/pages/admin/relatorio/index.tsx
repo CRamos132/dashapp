@@ -1,10 +1,10 @@
-import { useEffect } from "react";
 import { collection, getDocs, orderBy, query } from "firebase/firestore";
 import { useQuery } from "react-query";
 import PageWrapper from "../../../components/PageWrapper";
 import { firestore } from "../../../lib/firebase";
 import { Box, Button, useToast } from "@chakra-ui/react";
-import convertToCSV, { convertArrayToCSV } from "../../../utils/convertToCSV";
+import { convertArrayToCSV } from "../../../utils/convertToCSV";
+import Table from "../../../components/Table";
 
 interface ReportUser {
   nome: string;
@@ -13,7 +13,7 @@ interface ReportUser {
   cidade?: string;
   discord?: string;
   foto?: string;
-  id?: string;
+  id: string;
   sobre?: string;
   tel?: string;
   twitch?: string;
@@ -36,18 +36,33 @@ export default function ReportPage() {
     return users
   })
 
-  const columns: any = [
+  const columns = [
     {
-      Header: 'Nome',
-      accessor: 'nome',
+      label: 'Nome',
+      key: 'nome',
     },
     {
-      Header: 'Email',
-      accessor: 'email',
+      label: 'Email',
+      key: 'email',
+      width: 280
     },
     {
-      Header: 'Apelido',
-      accessor: 'apelido',
+      label: 'Fidelidash',
+      key: 'fidelidash',
+      width: 100
+    },
+    {
+      label: 'Apelido',
+      key: 'apelido',
+    },
+    {
+      label: 'Cidade',
+      key: 'cidade',
+    },
+    {
+      label: 'UF',
+      key: 'uf',
+      width: 80
     }
   ]
 
@@ -76,31 +91,7 @@ export default function ReportPage() {
       {isLoading && <p>Carregando...</p>}
       <Button onClick={handleCopy}>Copiar relatório</Button>
       <Box margin='12px 0'>{tableData?.length} usuários</Box>
-      <table>
-        <thead>
-          <th>Nome</th>
-          <th>Email</th>
-          <th>Fidelidash</th>
-          <th>Apelido</th>
-          <th>Cidade</th>
-          <th>UF</th>
-        </thead>
-        <tbody>
-          {tableData.map((user) => {
-            if (!user) return null
-            return (
-              <tr key={user.id}>
-                <td>{user?.nome ?? '--'}</td>
-                <td>{user?.email ?? '--'}</td>
-                <td>{user?.fidelidash ?? '--'}</td>
-                <td>{user?.apelido ?? '--'}</td>
-                <td>{user?.cidade ?? '--'}</td>
-                <td>{user?.uf ?? '--'}</td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+      <Table headers={columns} data={tableData} />
     </PageWrapper>
   )
 }
