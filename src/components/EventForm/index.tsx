@@ -6,6 +6,7 @@ import {
   Textarea,
   Button
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import { ChangeEventHandler } from "react";
 import { IEvent, IEventSubscriber } from "../../interfaces/Event";
 import { capitalizeFirstLetter } from "../../utils/string";
@@ -19,7 +20,8 @@ interface IProps {
 }
 
 export default function EventForm({ eventData, handleChange, addFidelidashUsers, handleRemoveFidelidash }: IProps) {
-  const location = window?.location.pathname.split('/')
+  const router = useRouter()
+  const location = router.pathname.split('/')
   const locationName = capitalizeFirstLetter(location[location.length - 1])
   return (
     <Flex
