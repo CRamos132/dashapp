@@ -1,7 +1,7 @@
 import { Flex } from "@chakra-ui/react";
 import { AiFillHome } from "react-icons/ai";
 import { BsFillPersonFill, BsFillPersonCheckFill } from "react-icons/bs";
-import { FaUsers } from "react-icons/fa";
+import { FaTrophy, FaUsers } from "react-icons/fa";
 
 import { useAuth } from "../../contexts/AuthContext";
 import { CustomLink } from "../CustomLink";
@@ -21,6 +21,13 @@ function MenuContent() {
           _hover={{ color: "initial" }}
         >
           <IconButton aria-label="Fidelidash" as={FaUsers} w={12} h={12} />
+        </CustomLink>
+        <CustomLink
+          href="/ligas"
+          color="initial"
+          _hover={{ color: "initial" }}
+        >
+          <IconButton aria-label="Ligas" as={FaTrophy} w={12} h={12} />
         </CustomLink>
         {auth.isAdmin ? (
           <CustomLink

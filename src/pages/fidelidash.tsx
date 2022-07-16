@@ -6,6 +6,7 @@ import { IUser } from "../interfaces/User";
 import { getUsers } from "../lib/firebase/UsersRepository";
 import { rankBorders } from "../utils/rank";
 import { CustomLink } from "../components/CustomLink";
+import Head from "next/head";
 
 export default function FidelidashPage() {
   const [fidelidash, setFidelidash] = useState<IUser[]>([] as IUser[]);
@@ -20,6 +21,9 @@ export default function FidelidashPage() {
 
   return (
     <PageWrapper>
+      <Head>
+        <title>Ligas</title>
+      </Head>
       <Flex direction="column" alignItems="center">
         <Heading mt="4" fontSize={30}>
           Fidelidash

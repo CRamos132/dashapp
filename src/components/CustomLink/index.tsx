@@ -3,6 +3,7 @@ import Link from "next/link";
 
 interface IProps extends TextProps {
   href: string;
+  target?: "_blank"
   children: React.ReactNode;
 }
 
