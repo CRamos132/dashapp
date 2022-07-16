@@ -39,23 +39,25 @@ export default function LigasPage() {
           Ligas
         </Heading>
 
-        <Flex gap="4" position="absolute" right="5" top="5">
-          <CustomLink
-            background="gray.100"
-            textAlign="center"
-            borderRadius="6px"
-            padding="2"
-            paddingX="4"
-            fontWeight="bold"
-            color="black"
-            _hover={{
-              backgroundColor: "gray.200",
-            }}
-            href={`/ligas/criar`}
-          >
-            Criar
-          </CustomLink>
-        </Flex>
+        {auth.isAdmin && (
+          <Flex gap="4" position="absolute" right="5" top="5">
+            <CustomLink
+              background="gray.100"
+              textAlign="center"
+              borderRadius="6px"
+              padding="2"
+              paddingX="4"
+              fontWeight="bold"
+              color="black"
+              _hover={{
+                backgroundColor: "gray.200",
+              }}
+              href={`/ligas/criar`}
+            >
+              Criar
+            </CustomLink>
+          </Flex>
+        )}
 
         <Flex direction="column" gap="4" mt="4">
           {ligas.map((liga) => {
@@ -102,7 +104,13 @@ export default function LigasPage() {
                     </Flex>
                   )}
 
-                  <Box width="100%" as="h2" fontSize="1.2rem" fontWeight="bold" mt={`${auth.isAdmin ? "12" : "0"}`}>
+                  <Box
+                    width="100%"
+                    as="h2"
+                    fontSize="1.2rem"
+                    fontWeight="bold"
+                    mt={`${auth.isAdmin ? "12" : "0"}`}
+                  >
                     {liga?.nome || liga.titulo}
                   </Box>
                   <Grid
