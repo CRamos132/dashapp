@@ -1,14 +1,16 @@
 import { Box, Flex, Grid, Heading, Image } from "@chakra-ui/react";
 import { useQuery } from "react-query";
 import { useState } from "react";
-import PageWrapper from "../components/PageWrapper";
-import { CustomLink } from "../components/CustomLink";
+import PageWrapper from "../../components/PageWrapper";
+import { CustomLink } from "../../components/CustomLink";
 import { query, collection, getDocs } from "firebase/firestore";
-import { firestore } from "../lib/firebase";
-import { ILiga } from "../interfaces/Liga";
+import { firestore } from "../../lib/firebase";
+import { ILiga } from "../../interfaces/Liga";
 import Head from "next/head";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function LigasPage() {
+  const auth = useAuth();
   const [ligas, setLigas] = useState<ILiga[]>([] as ILiga[]);
 
   async function getLigas() {
@@ -37,6 +39,24 @@ export default function LigasPage() {
           Ligas
         </Heading>
 
+        <Flex gap="4" position="absolute" right="5" top="5">
+          <CustomLink
+            background="gray.100"
+            textAlign="center"
+            borderRadius="6px"
+            padding="2"
+            paddingX="4"
+            fontWeight="bold"
+            color="black"
+            _hover={{
+              backgroundColor: "gray.200",
+            }}
+            href={`/ligas/criar`}
+          >
+            Criar
+          </CustomLink>
+        </Flex>
+
         <Flex direction="column" gap="4" mt="4">
           {ligas.map((liga) => {
             return (
@@ -60,8 +80,29 @@ export default function LigasPage() {
                   backgroundColor="blue.200"
                   padding="8px"
                   textAlign="center"
+                  position="relative"
                 >
-                  <Box width="100%" as="h2" fontSize="1.2rem" fontWeight="bold">
+                  {auth.isAdmin && (
+                    <Flex gap="4" position="absolute" right="5">
+                      <CustomLink
+                        background="gray.100"
+                        textAlign="center"
+                        borderRadius="6px"
+                        padding="2"
+                        paddingX="4"
+                        fontWeight="bold"
+                        color="black"
+                        _hover={{
+                          backgroundColor: "gray.200",
+                        }}
+                        href={`/ligas/${liga.id}/editar`}
+                      >
+                        Editar
+                      </CustomLink>
+                    </Flex>
+                  )}
+
+                  <Box width="100%" as="h2" fontSize="1.2rem" fontWeight="bold" mt={`${auth.isAdmin ? "12" : "0"}`}>
                     {liga?.nome || liga.titulo}
                   </Box>
                   <Grid
