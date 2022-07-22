@@ -1,4 +1,6 @@
-import { Box, Flex } from "@chakra-ui/react"
+import { useState } from 'react'
+import { Box, Button, Flex } from "@chakra-ui/react"
+import { AiFillFilter, AiOutlineFilter } from 'react-icons/ai'
 
 interface ITableComponentProp {
   value: any
@@ -9,23 +11,76 @@ interface IData {
   [key: string]: any;
 }
 
+interface IHeader {
+  key: string
+  label: string
+  component?: React.FunctionComponent<ITableComponentProp>
+  width?: number
+  sort?: boolean
+}
+
 interface IProps {
-  headers: { key: string, label: string, component?: React.FunctionComponent<ITableComponentProp>, width?: number }[]
+  headers: IHeader[]
   data: IData[]
 }
 
 export default function Table({ headers, data }: IProps) {
+  const [tableData, setTableData] = useState(data)
+  const [activeSort, setActiveSort] = useState('')
+  const [isAsc, setIsAsc] = useState(true)
+
+  function compare(a: IData, b: IData, key: string, order: boolean) {
+    if (a[key] < b[key]) {
+      return order ? -1 : 1;
+    }
+    if (a[key] > b[key]) {
+      return order ? 1 : -1;
+    }
+    return 0;
+  }
+
+  const handleSort = (key: string) => {
+    if (activeSort === key) {
+      const copy = new Array(...tableData)
+      const sortedData = copy.sort((a, b) => compare(a, b, key, !isAsc))
+      setIsAsc(oldState => !oldState)
+      setTableData(sortedData)
+    } else {
+      setActiveSort(key)
+      const copy = new Array(...tableData)
+      const sortedData = copy.sort((a, b) => compare(a, b, key, true))
+      setIsAsc(true)
+      setTableData(sortedData)
+    }
+  }
+
   return (
     <Box as='table'>
-      <Flex as='thead' direction='row'>
-        {
-          headers.map(item => {
-            return <Flex justifyContent='center' width={item?.width ? `${item?.width}px` : '200px'} key={item.key}>{item.label}</Flex>
-          })
-        }
-      </Flex>
+      <thead>
+        <Flex as='tr' direction='row'>
+          {
+            headers.map(item => {
+              return (
+                <Flex
+                  justifyContent='center'
+                  width={item?.width ? `${item?.width}px` : '200px'}
+                  key={item.key}
+                  as='th'
+                >
+                  {item.label}
+                  {item?.sort && (
+                    <Button onClick={() => { handleSort(item.key) }}>
+                      {activeSort === item.key ? <AiFillFilter /> : <AiOutlineFilter />}
+                    </Button>
+                  )}
+                </Flex>
+              )
+            })
+          }
+        </Flex>
+      </thead>
       <Flex as='tbody' direction='column'>
-        {data?.map((row) => {
+        {tableData?.map((row) => {
           return (
             <Flex flex={1} direction='row' key={row.id}>
               {headers.map((header) => {
@@ -33,22 +88,6 @@ export default function Table({ headers, data }: IProps) {
                 if (header?.component) {
                   const Component = header?.component
                   return <Component value={columnValue} key={columnValue} />
-                }
-                if (typeof columnValue === 'boolean') {
-                  return columnValue ? 'Yes' : 'No'
-                }
-                if (header.key === 'action') {
-                  return (
-                    <Flex
-                      justifyContent='center'
-                      title={row?.[header.key] ?? '--'}
-                      overflow='hidden'
-                      width={header?.width ? `${header?.width}px` : '200px'}
-                      key={columnValue}
-                    >
-                      <button type="button" key={columnValue}>{header.label}</button>
-                    </Flex>
-                  )
                 }
                 return (
                   <Flex

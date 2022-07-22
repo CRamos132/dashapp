@@ -40,6 +40,7 @@ export default function ReportPage() {
     {
       label: 'Nome',
       key: 'nome',
+      sort: true
     },
     {
       label: 'Email',
@@ -54,6 +55,7 @@ export default function ReportPage() {
     {
       label: 'Apelido',
       key: 'apelido',
+      sort: true
     },
     {
       label: 'Cidade',
