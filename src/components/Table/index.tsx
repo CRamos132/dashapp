@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Box, Button, Flex } from "@chakra-ui/react"
-import { AiFillFilter, AiOutlineFilter } from 'react-icons/ai'
+import { BsArrowDownSquare, BsArrowDownSquareFill, BsArrowUpSquareFill } from 'react-icons/bs'
 
 interface ITableComponentProp {
   value: any
@@ -22,6 +22,18 @@ interface IHeader {
 interface IProps {
   headers: IHeader[]
   data: IData[]
+}
+
+const ActiveFilter = ({ isAsc }: { isAsc: boolean }) => {
+  return (
+    <>
+      {isAsc ? (
+        <BsArrowDownSquareFill />
+      ) : (
+        <BsArrowUpSquareFill />
+      )}
+    </>
+  )
 }
 
 export default function Table({ headers, data }: IProps) {
@@ -70,7 +82,7 @@ export default function Table({ headers, data }: IProps) {
                   {item.label}
                   {item?.sort && (
                     <Button onClick={() => { handleSort(item.key) }}>
-                      {activeSort === item.key ? <AiFillFilter /> : <AiOutlineFilter />}
+                      {activeSort === item.key ? <ActiveFilter isAsc={isAsc} /> : <BsArrowDownSquare />}
                     </Button>
                   )}
                 </Flex>
