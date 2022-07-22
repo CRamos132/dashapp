@@ -91,32 +91,35 @@ export default function Table({ headers, data }: IProps) {
           }
         </Flex>
       </thead>
-      <Flex as='tbody' direction='column'>
-        {tableData?.map((row) => {
-          return (
-            <Flex flex={1} direction='row' key={row.id}>
-              {headers.map((header) => {
-                const columnValue = row?.[header.key]
-                if (header?.component) {
-                  const Component = header?.component
-                  return <Component value={columnValue} key={columnValue} />
-                }
-                return (
-                  <Flex
-                    justifyContent='center'
-                    title={row?.[header.key] ?? '--'}
-                    overflow='hidden'
-                    width={header?.width ? `${header?.width}px` : '200px'}
-                    key={columnValue}
-                  >
-                    {row?.[header.key] ?? '--'}
-                  </Flex>
-                )
-              })}
-            </Flex>
-          )
-        })}
-      </Flex>
+      <tbody>
+        <Flex as='tr' direction='column'>
+          {tableData?.map((row) => {
+            return (
+              <Flex flex={1} direction='row' key={row.id}>
+                {headers.map((header) => {
+                  const columnValue = row?.[header.key]
+                  if (header?.component) {
+                    const Component = header?.component
+                    return <Component value={columnValue} key={columnValue} />
+                  }
+                  return (
+                    <Flex
+                      as='td'
+                      justifyContent='center'
+                      title={row?.[header.key] ?? '--'}
+                      overflow='hidden'
+                      width={header?.width ? `${header?.width}px` : '200px'}
+                      key={`${columnValue}-${header.key}`}
+                    >
+                      {row?.[header.key] ?? '--'}
+                    </Flex>
+                  )
+                })}
+              </Flex>
+            )
+          })}
+        </Flex>
+      </tbody>
     </Box>
   )
 }
