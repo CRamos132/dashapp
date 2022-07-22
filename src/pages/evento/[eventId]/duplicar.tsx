@@ -4,12 +4,12 @@ import { doc, addDoc, collection } from "firebase/firestore";
 import {
   useToast,
 } from "@chakra-ui/react";
-import { firestore } from "../../../../lib/firebase";
-import PageWrapper from "../../../../components/PageWrapper";
-import { IEvent, IEventSubscriber } from "../../../../interfaces/Event";
-import { getUsers } from "../../../../lib/firebase/UsersRepository";
-import { getEventById } from "../../../../lib/firebase/EventRepository";
-import EventForm from "../../../../components/EventForm";
+import { firestore } from "../../../lib/firebase";
+import PageWrapper from "../../../components/PageWrapper";
+import { IEvent, IEventSubscriber } from "../../../interfaces/Event";
+import { getUsers } from "../../../lib/firebase/UsersRepository";
+import { getEventById } from "../../../lib/firebase/EventRepository";
+import EventForm from "../../../components/EventForm";
 
 export default function DuplicateEventPage() {
   const [eventData, setEventData] = useState<IEvent>({} as IEvent);
