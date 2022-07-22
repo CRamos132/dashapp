@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Box, Button, Flex } from "@chakra-ui/react"
 import { BsArrowDownSquare, BsArrowDownSquareFill, BsArrowUpSquareFill } from 'react-icons/bs'
 
@@ -24,6 +24,13 @@ interface IProps {
   data: IData[]
 }
 
+interface ITableHeadersProps {
+  headers: IHeader[]
+  activeSort: string
+  isAsc: boolean
+  handleSort: (key: string) => void
+}
+
 const ActiveFilter = ({ isAsc }: { isAsc: boolean }) => {
   return (
     <>
@@ -33,6 +40,74 @@ const ActiveFilter = ({ isAsc }: { isAsc: boolean }) => {
         <BsArrowUpSquareFill />
       )}
     </>
+  )
+}
+
+const TableHeaders = ({ headers, activeSort, isAsc, handleSort }: ITableHeadersProps) => {
+  return (
+    <Flex as='tr' direction='row'>
+      {
+        headers.map(item => {
+          return (
+            <Flex
+              justifyContent='center'
+              width={item?.width ? `${item?.width}px` : '200px'}
+              key={item.key}
+              as='th'
+            >
+              {item.label}
+              {item?.sort && (
+                <Button onClick={() => { handleSort(item.key) }}>
+                  {activeSort === item.key ? <ActiveFilter isAsc={isAsc} /> : <BsArrowDownSquare />}
+                </Button>
+              )}
+            </Flex>
+          )
+        })
+      }
+    </Flex>
+  )
+}
+
+const BasicHeaders = ({ data }: { data: IData[] }) => {
+  const [headerKeys, setHeaderKeys] = useState<string[]>([])
+
+  const getHeaders = () => {
+    const sample = data.slice(0, 3)
+    let keys = new Set()
+    sample.forEach(item => {
+      const objKeys = Object.keys(item)
+      const newSet = new Set([...keys, ...objKeys])
+      keys = newSet
+    })
+    const keysArray = Array.from(keys)
+    setHeaderKeys(keysArray as string[])
+  }
+
+  useEffect(() => {
+    getHeaders()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data])
+
+  return (
+    <Flex as='tr' direction='row'>
+      {
+        headerKeys.map(item => {
+          return (
+            <Flex
+              as='td'
+              justifyContent='center'
+              title={item ?? '--'}
+              overflow='hidden'
+              width='200px'
+              key={item}
+            >
+              {item ?? '--'}
+            </Flex>
+          )
+        })
+      }
+    </Flex>
   )
 }
 
@@ -69,27 +144,17 @@ export default function Table({ headers, data }: IProps) {
   return (
     <Box as='table'>
       <thead>
-        <Flex as='tr' direction='row'>
-          {
-            headers.map(item => {
-              return (
-                <Flex
-                  justifyContent='center'
-                  width={item?.width ? `${item?.width}px` : '200px'}
-                  key={item.key}
-                  as='th'
-                >
-                  {item.label}
-                  {item?.sort && (
-                    <Button onClick={() => { handleSort(item.key) }}>
-                      {activeSort === item.key ? <ActiveFilter isAsc={isAsc} /> : <BsArrowDownSquare />}
-                    </Button>
-                  )}
-                </Flex>
-              )
-            })
-          }
-        </Flex>
+        {
+          headers ? (
+            <TableHeaders
+              activeSort={activeSort}
+              handleSort={handleSort}
+              headers={headers}
+              isAsc={isAsc} />
+          ) : (
+            <BasicHeaders data={data} />
+          )
+        }
       </thead>
       <tbody>
         <Flex as='tr' direction='column'>
