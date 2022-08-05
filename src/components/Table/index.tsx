@@ -3,7 +3,8 @@ import { Box, Button, Flex } from "@chakra-ui/react"
 import { BsArrowDownSquare, BsArrowDownSquareFill, BsArrowUpSquareFill } from 'react-icons/bs'
 
 interface ITableComponentProp {
-  value: any
+  value: any;
+  row: Record<string, any>;
 }
 
 interface IData {
@@ -11,7 +12,7 @@ interface IData {
   [key: string]: any;
 }
 
-interface IHeader {
+export interface IHeader {
   key: string
   label: string
   component?: React.FunctionComponent<ITableComponentProp>
@@ -129,7 +130,7 @@ export default function Table({ headers, data }: IProps) {
   function compareString(a: any, b: any, order: boolean) {
     const itemOne = a
     const itemTwo = b
-    const sort = itemOne.localeCompare(itemTwo)
+    const sort = itemOne?.localeCompare(itemTwo)
 
     if (sort === 0) {
       return sort
@@ -185,7 +186,7 @@ export default function Table({ headers, data }: IProps) {
                   const columnValue = row?.[header.key]
                   if (header?.component) {
                     const Component = header?.component
-                    return <Component value={columnValue} key={columnValue} />
+                    return <Component value={columnValue} row={row} key={columnValue} />
                   }
                   return (
                     <Flex

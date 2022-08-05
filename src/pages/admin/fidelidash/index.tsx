@@ -1,7 +1,7 @@
 import { FormEventHandler, useState } from "react";
 import { Box, Button, Flex, Input, Select, useToast } from "@chakra-ui/react";
 import PageWrapper from "../../../components/PageWrapper";
-import { collection, getDocs, query, where, writeBatch, doc, getDoc, orderBy } from "firebase/firestore";
+import { collection, getDocs, query, where, writeBatch, doc, getDoc, orderBy, deleteField } from "firebase/firestore";
 import { firestore } from "../../../lib/firebase";
 import { useQuery } from "react-query";
 import { IAditionalUserData } from "../../../interfaces/User";
@@ -9,9 +9,10 @@ import { IAditionalUserData } from "../../../interfaces/User";
 export default function FidelidashManagementPage() {
   const [userList, setUserList] = useState<any[]>([])
   const [usersToChange, setUsersToChange] = useState<any[]>([])
+  console.log("🚀 ~ usersToChange", usersToChange)
   const toast = useToast()
 
-  const { isLoading, error, data } = useQuery('fidelidasg', async () => {
+  const { isLoading, error, data, refetch } = useQuery('fidelidash', async () => {
     const q = query(collection(firestore, "users"), orderBy('fidelidash'))
     const querySnapshot = await getDocs(q);
     const users: IAditionalUserData[] = []
@@ -49,13 +50,15 @@ export default function FidelidashManagementPage() {
 
   const handleUpdate = () => {
     const batch = writeBatch(firestore);
-
     usersToChange.forEach((user) => {
       const newChange = doc(firestore, "users", user.id);
-      batch.update(newChange, { "fidelidash": user.fidelidash });
+      const changeValue = user.fidelidash ? user.fidelidash : deleteField()
+      batch.update(newChange, { "fidelidash": changeValue });
     })
 
     batch.commit().then(() => {
+      refetch()
+      setUsersToChange([])
       toast({
         title: "Usuários atualizados com sucesso",
         status: "success",
@@ -78,6 +81,13 @@ export default function FidelidashManagementPage() {
             <Button onClick={handleUpdate}>Atualizar usuários</Button>
           )}
         </Flex>
+        <Flex direction='column'>
+          {usersToChange?.map(item => {
+            return (
+              <div key={item?.id}>{item?.apelido} {'>'} {item?.fidelidash ?? '--'}</div>
+            )
+          })}
+        </Flex>
         {userList.length > 0 && (
           <>
             <Box as='h2' fontSize='1.5rem' fontWeight='bold' margin='12px 0'>Search users</Box>
@@ -91,6 +101,8 @@ export default function FidelidashManagementPage() {
               </thead>
               <tbody>
                 {userList.map((user) => {
+                  const dataFromChange = usersToChange.find((item): any => item?.id === user?.id)
+                  console.log("🚀 ~ dataFromChange", dataFromChange?.fidelidash)
                   return (
                     <tr key={user.id}>
                       <td>{user?.apelido}</td>
@@ -98,12 +110,12 @@ export default function FidelidashManagementPage() {
                       <td>
                         <Select
                           placeholder="Selecione um tipo"
-                          value={user?.fidelidash}
+                          value={dataFromChange?.fidelidash ?? user?.fidelidash}
                           onChange={(e: any) => {
                             setUsersToChange([...usersToChange, { ...user, fidelidash: e.target.value }])
                           }}
                         >
-                          <option value={undefined}>Sem fidelidash</option>
+                          <option value=''>Sem fidelidash</option>
                           <option value='bronze'>Bronze</option>
                           <option value='prata'>Prata</option>
                           <option value='ouro'>Ouro</option>

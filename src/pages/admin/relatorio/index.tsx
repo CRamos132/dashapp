@@ -1,10 +1,11 @@
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, deleteField, getDocs, orderBy, query } from "firebase/firestore";
 import { useQuery } from "react-query";
 import PageWrapper from "../../../components/PageWrapper";
 import { firestore } from "../../../lib/firebase";
-import { Box, Button, useToast } from "@chakra-ui/react";
+import { Box, Button, Flex, Select, useToast } from "@chakra-ui/react";
 import { convertArrayToCSV } from "../../../utils/convertToCSV";
-import Table from "../../../components/Table";
+import Table, { IHeader } from "../../../components/Table";
+import { useEffect, useMemo, useState } from "react";
 
 interface ReportUser {
   nome: string;
@@ -24,6 +25,7 @@ interface ReportUser {
 
 export default function ReportPage() {
   const toast = useToast()
+  const [newFidelidashValues, setNewFidelidashValues] = useState<Record<string, any>[]>([])
 
   const { isLoading, data } = useQuery('userReport', async () => {
     const q = query(collection(firestore, "users"), orderBy('nome', 'asc'))
@@ -36,7 +38,7 @@ export default function ReportPage() {
     return users
   })
 
-  const columns = [
+  const columns: IHeader[] = [
     {
       label: 'Nome',
       key: 'nome',
@@ -50,7 +52,32 @@ export default function ReportPage() {
     {
       label: 'Fidelidash',
       key: 'fidelidash',
-      width: 100
+      width: 100,
+      sort: true,
+      // component: ({ row }) => {
+      //   return (
+      //     <Flex>
+      //       <Select
+      //         placeholder="Fidelidash"
+      //         value={row?.fidelidash}
+      //         onChange={(e: any) => {
+      //           const newUserData = {
+      //             ...row,
+      //             fidelidash: e.target.value
+      //           }
+      //           const newFidelidashData = [...newFidelidashValues, newUserData]
+      //           setNewFidelidashValues(newFidelidashData)
+      //         }}
+      //       >
+      //         <option value=''>Sem fidelidash</option>
+      //         <option value='bronze'>Bronze</option>
+      //         <option value='prata'>Prata</option>
+      //         <option value='ouro'>Ouro</option>
+      //         <option value='platina'>Platina</option>
+      //       </Select>
+      //     </Flex>
+      //   )
+      // }
     },
     {
       label: 'Apelido',
@@ -68,7 +95,13 @@ export default function ReportPage() {
     }
   ]
 
-  const tableData = data || []
+  const tableData = useMemo(() => {
+    return data || []
+  }, [data])
+
+  useEffect(() => {
+    console.log("🚀 ~ newFidelidashValues", newFidelidashValues)
+  }, [newFidelidashValues])
 
   const handleCopy = () => {
     if (!!data?.length) {
