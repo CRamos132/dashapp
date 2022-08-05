@@ -116,14 +116,34 @@ export default function Table({ headers, data }: IProps) {
   const [activeSort, setActiveSort] = useState('')
   const [isAsc, setIsAsc] = useState(true)
 
-  function compare(a: IData, b: IData, key: string, order: boolean) {
-    if (a[key] < b[key]) {
+  function compareNumber(a: Number, b: Number, order: boolean) {
+    if (a < b) {
       return order ? -1 : 1;
     }
-    if (a[key] > b[key]) {
+    if (a > b) {
       return order ? 1 : -1;
     }
     return 0;
+  }
+
+  function compareString(a: any, b: any, order: boolean) {
+    const itemOne = a
+    const itemTwo = b
+    const sort = itemOne.localeCompare(itemTwo)
+
+    if (sort === 0) {
+      return sort
+    }
+    return order ? sort : sort * (-1)
+  }
+
+  const compare = (a: IData, b: IData, key: string, order: boolean) => {
+    const itemOne = a[key]
+    const itemTwo = b[key]
+    if (typeof itemOne === 'number') {
+      return compareNumber(itemOne, itemTwo, order)
+    }
+    return compareString(itemOne, itemTwo, order)
   }
 
   const handleSort = (key: string) => {

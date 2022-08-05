@@ -103,7 +103,7 @@ export default function FidelidashManagementPage() {
                             setUsersToChange([...usersToChange, { ...user, fidelidash: e.target.value }])
                           }}
                         >
-                          <option value=''>Sem fidelidash</option>
+                          <option value={undefined}>Sem fidelidash</option>
                           <option value='bronze'>Bronze</option>
                           <option value='prata'>Prata</option>
                           <option value='ouro'>Ouro</option>
