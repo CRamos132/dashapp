@@ -162,6 +162,12 @@ export default function Table({ headers, data }: IProps) {
     }
   }
 
+  useEffect(() => {
+    setTableData(data)
+    setActiveSort('')
+    setIsAsc(true)
+  }, [data])
+
   return (
     <Box as='table'>
       <thead>

@@ -99,10 +99,6 @@ export default function ReportPage() {
     return data || []
   }, [data])
 
-  useEffect(() => {
-    console.log("🚀 ~ newFidelidashValues", newFidelidashValues)
-  }, [newFidelidashValues])
-
   const handleCopy = () => {
     if (!!data?.length) {
       const dataToTable = data.map(item => {
