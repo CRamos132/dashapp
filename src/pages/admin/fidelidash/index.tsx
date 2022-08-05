@@ -68,6 +68,19 @@ export default function FidelidashManagementPage() {
     });
   }
 
+  const handleUpdateList = (user: Record<string, any>) => {
+    const currentList = new Map()
+    usersToChange.forEach(item => {
+      currentList.set(item.id, item)
+    })
+
+    currentList.set(user.id, user)
+
+    const values = Array.from(currentList.values());
+
+    setUsersToChange(values)
+  }
+
   return (
     <PageWrapper isAdminPage>
       <Flex flexDirection='column' padding='32px'>
@@ -112,7 +125,7 @@ export default function FidelidashManagementPage() {
                           placeholder="Selecione um tipo"
                           value={dataFromChange?.fidelidash ?? user?.fidelidash}
                           onChange={(e: any) => {
-                            setUsersToChange([...usersToChange, { ...user, fidelidash: e.target.value }])
+                            handleUpdateList({ ...user, fidelidash: e.target.value })
                           }}
                         >
                           <option value=''>Sem fidelidash</option>
