@@ -1,10 +1,11 @@
-import { useEffect } from "react";
-import { collection, getDocs, orderBy, query } from "firebase/firestore";
+import { collection, deleteField, getDocs, orderBy, query } from "firebase/firestore";
 import { useQuery } from "react-query";
 import PageWrapper from "../../../components/PageWrapper";
 import { firestore } from "../../../lib/firebase";
-import { Box, Button, useToast } from "@chakra-ui/react";
-import convertToCSV, { convertArrayToCSV } from "../../../utils/convertToCSV";
+import { Box, Button, Flex, Select, useToast } from "@chakra-ui/react";
+import { convertArrayToCSV } from "../../../utils/convertToCSV";
+import Table, { IHeader } from "../../../components/Table";
+import { useEffect, useMemo, useState } from "react";
 
 interface ReportUser {
   nome: string;
@@ -13,7 +14,7 @@ interface ReportUser {
   cidade?: string;
   discord?: string;
   foto?: string;
-  id?: string;
+  id: string;
   sobre?: string;
   tel?: string;
   twitch?: string;
@@ -24,6 +25,7 @@ interface ReportUser {
 
 export default function ReportPage() {
   const toast = useToast()
+  const [newFidelidashValues, setNewFidelidashValues] = useState<Record<string, any>[]>([])
 
   const { isLoading, data } = useQuery('userReport', async () => {
     const q = query(collection(firestore, "users"), orderBy('nome', 'asc'))
@@ -36,22 +38,66 @@ export default function ReportPage() {
     return users
   })
 
-  const columns: any = [
+  const columns: IHeader[] = [
     {
-      Header: 'Nome',
-      accessor: 'nome',
+      label: 'Nome',
+      key: 'nome',
+      sort: true
     },
     {
-      Header: 'Email',
-      accessor: 'email',
+      label: 'Email',
+      key: 'email',
+      width: 280
     },
     {
-      Header: 'Apelido',
-      accessor: 'apelido',
+      label: 'Fidelidash',
+      key: 'fidelidash',
+      width: 100,
+      sort: true,
+      // component: ({ row }) => {
+      //   return (
+      //     <Flex>
+      //       <Select
+      //         placeholder="Fidelidash"
+      //         value={row?.fidelidash}
+      //         onChange={(e: any) => {
+      //           const newUserData = {
+      //             ...row,
+      //             fidelidash: e.target.value
+      //           }
+      //           const newFidelidashData = [...newFidelidashValues, newUserData]
+      //           setNewFidelidashValues(newFidelidashData)
+      //         }}
+      //       >
+      //         <option value=''>Sem fidelidash</option>
+      //         <option value='bronze'>Bronze</option>
+      //         <option value='prata'>Prata</option>
+      //         <option value='ouro'>Ouro</option>
+      //         <option value='platina'>Platina</option>
+      //       </Select>
+      //     </Flex>
+      //   )
+      // }
+    },
+    {
+      label: 'Apelido',
+      key: 'apelido',
+      sort: true
+    },
+    {
+      label: 'Cidade',
+      key: 'cidade',
+    },
+    {
+      label: 'UF',
+      key: 'uf',
+      width: 80
     }
   ]
 
-  const tableData = data || []
+  const tableData = useMemo(() => {
+    return data || []
+  }, [data])
 
   const handleCopy = () => {
     if (!!data?.length) {
@@ -76,31 +122,7 @@ export default function ReportPage() {
       {isLoading && <p>Carregando...</p>}
       <Button onClick={handleCopy}>Copiar relatório</Button>
       <Box margin='12px 0'>{tableData?.length} usuários</Box>
-      <table>
-        <thead>
-          <th>Nome</th>
-          <th>Email</th>
-          <th>Fidelidash</th>
-          <th>Apelido</th>
-          <th>Cidade</th>
-          <th>UF</th>
-        </thead>
-        <tbody>
-          {tableData.map((user) => {
-            if (!user) return null
-            return (
-              <tr key={user.id}>
-                <td>{user?.nome ?? '--'}</td>
-                <td>{user?.email ?? '--'}</td>
-                <td>{user?.fidelidash ?? '--'}</td>
-                <td>{user?.apelido ?? '--'}</td>
-                <td>{user?.cidade ?? '--'}</td>
-                <td>{user?.uf ?? '--'}</td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+      <Table headers={columns} data={tableData} />
     </PageWrapper>
   )
 }

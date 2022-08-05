@@ -23,6 +23,7 @@ interface TAuthContext {
   isAdmin: boolean;
   logout: () => void;
   aditionalData: IAditionalUserData | null;
+  isInitialized?: boolean
 }
 
 const AuthContext = createContext<TAuthContext>({
@@ -33,12 +34,14 @@ const AuthContext = createContext<TAuthContext>({
   isAdmin: false,
   logout: () => { },
   aditionalData: null,
+  isInitialized: false,
 });
 
 function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [aditionalUserInfo, setAditionalUserInfo] = useState<IAditionalUserData | null>(null)
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
+  const [isInitialized, setIsInitialized] = useState(false)
 
   const toast = useToast()
   const router = useRouter()
@@ -167,6 +170,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
       .then(() => {
         setUser(null)
         setIsAdmin(false)
+        setIsInitialized(false)
         router.push('/')
       })
       .catch(error => {
@@ -187,6 +191,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
     const docSnap = await getDoc(docRef);
     const parsedData = docSnap.data()
     setAditionalUserInfo(parsedData as IAditionalUserData)
+    setIsInitialized(true)
   }
 
   useEffect(() => {
@@ -219,6 +224,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
         isAdmin,
         logout: handleLogout,
         aditionalData: aditionalUserInfo,
+        isInitialized
       }}
     >
       {children}

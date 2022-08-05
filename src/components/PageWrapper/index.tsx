@@ -14,10 +14,13 @@ export default function PageWrapper({ children, isAdminPage, ...props }: IProps)
   const auth = useAuth()
 
   useEffect(() => {
-    if (isAdminPage && !auth?.isAdmin) {
+    if (isAdminPage && !auth?.isAdmin && auth?.isInitialized) {
       router.push('/')
     }
   }, [auth, isAdminPage, router])
+  if (!auth?.isInitialized) {
+    return <Box>Loading</Box>
+  }
   return (
     <Box minHeight='100vh' padding={['0 0 10vh 0', '0 0 0 100px']} {...props}>
       {children}

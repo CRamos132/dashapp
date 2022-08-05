@@ -15,8 +15,8 @@ export default function EditEventPage() {
   const [eventData, setEventData] = useState<IEvent>({} as IEvent);
   const toast = useToast();
   const router = useRouter();
-  const { asPath } = router;
-  const eventId = asPath.split("/")[2];
+  const { eventId } = router.query;
+
 
   async function addFidelidashUsers() {
     const fidelidashUsers = await getUsers({ orderBy: "fidelidash" });
@@ -50,7 +50,7 @@ export default function EditEventPage() {
 
   const getEvent = async () => {
     if (!eventId || eventId === "[eventId]") return;
-    const eventData = await getEventById(eventId);
+    const eventData = await getEventById(eventId as string);
 
     if (eventData) {
       if (eventData?.local) {
