@@ -4,8 +4,9 @@ import {
   Input,
   Flex,
   Textarea,
-  Button
+  Button,
 } from "@chakra-ui/react";
+import { formatISO } from "date-fns";
 import { useRouter } from "next/router";
 import { ChangeEventHandler } from "react";
 import { IEvent, IEventSubscriber } from "../../interfaces/Event";
@@ -13,16 +14,22 @@ import { capitalizeFirstLetter } from "../../utils/string";
 import { SubscribersList } from "../SubscribersList";
 
 interface IProps {
-  eventData: IEvent
-  handleChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>
-  addFidelidashUsers: () => Promise<void>
-  handleRemoveFidelidash: (user?: IEventSubscriber) => void
+  eventData: IEvent;
+  handleChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  addFidelidashUsers: () => Promise<void>;
+  handleRemoveFidelidash: (user?: IEventSubscriber) => void;
 }
 
-export default function EventForm({ eventData, handleChange, addFidelidashUsers, handleRemoveFidelidash }: IProps) {
-  const router = useRouter()
-  const location = router.pathname.split('/')
-  const locationName = capitalizeFirstLetter(location[location.length - 1])
+export default function EventForm({
+  eventData,
+  handleChange,
+  addFidelidashUsers,
+  handleRemoveFidelidash,
+}: IProps) {
+  const router = useRouter();
+  const location = router.pathname.split("/");
+  const locationName = capitalizeFirstLetter(location[location.length - 1]);
+
   return (
     <Flex
       direction="column"
@@ -53,29 +60,25 @@ export default function EventForm({ eventData, handleChange, addFidelidashUsers,
         />
       </FormControl>
       <FormControl>
-        <FormLabel htmlFor="tempo">Data</FormLabel>
+        <FormLabel htmlFor="tempo">Data do evento</FormLabel>
         <Input
           id="tempo"
           name="tempo"
-          type="date"
+          type="datetime-local"
           value={
-            (eventData.tempo &&
-              new Date(eventData.tempo).toISOString().split("Z")[0]) ||
-            ""
+            (eventData.tempo && formatISO(new Date(eventData.tempo)).slice(0,-6)) || ""
           }
           onChange={handleChange}
         />
       </FormControl>
       <FormControl>
-        <FormLabel htmlFor="limite">Data limite</FormLabel>
+        <FormLabel htmlFor="limite">Data limite para inscrição</FormLabel>
         <Input
           id="limite"
           name="limite"
-          type="datetime"
+          type="datetime-local"
           value={
-            (eventData.limite &&
-              new Date(eventData.limite).toISOString().split("Z")[0]) ||
-            ""
+            (eventData.tempo && formatISO(new Date(eventData.tempo)).slice(0,-6)) || ""
           }
           onChange={handleChange}
         />
@@ -199,5 +202,5 @@ export default function EventForm({ eventData, handleChange, addFidelidashUsers,
         Editar
       </Button>
     </Flex>
-  )
+  );
 }
