@@ -78,7 +78,7 @@ export default function EventForm({
           name="limite"
           type="datetime-local"
           value={
-            (eventData.tempo && formatISO(new Date(eventData.tempo)).slice(0,-6)) || ""
+            (eventData.limite && formatISO(new Date(eventData.limite)).slice(0,-6)) || ""
           }
           onChange={handleChange}
         />
