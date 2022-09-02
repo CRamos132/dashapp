@@ -1,13 +1,9 @@
 import { Box, GridProps, Image } from "@chakra-ui/react";
-import { FidelidashRanks } from "../../interfaces/User";
+import { FidelidashRanks, IFirebaseUserData, IUser } from "../../interfaces/User";
 import { rankBorders } from "../../utils/rank";
 
 interface IProps extends GridProps {
-  userData: {
-    foto?: string;
-    nome: string;
-    fidelidash?: FidelidashRanks;
-  };
+  userData: IFirebaseUserData;
 }
 
 export function UserPicture({ userData }: IProps) {

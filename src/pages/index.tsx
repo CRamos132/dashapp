@@ -7,24 +7,20 @@ import { IEvent } from '../interfaces/Event';
 import { firestore } from '../lib/firebase';
 import PageWrapper from '../components/PageWrapper'
 import EventsList from '../components/EventsList';
-import { Flex } from '@chakra-ui/react';
+import { Box, Button, Flex } from '@chakra-ui/react';
+import useFidelidash from '../hooks/useFidelidash';
+import { UserPicture } from '../components/UserImage';
+import Link from 'next/link';
+import useOrg from '../hooks/useOrg';
 
 const Home: NextPage = () => {
-  const { isLoading, error, data } = useQuery('initialEvents', async () => {
-    const now = new Date();
-    const q = query(collection(firestore, "eventos"), orderBy('tempo', 'asc'), limit(10), where("tempo", ">", Date.parse(now.toDateString())))
-    const querySnapshot = await getDocs(q);
-    const events: IEvent[] = []
-    querySnapshot.forEach((doc) => {
-      const eventData = { id: doc.id, ...doc.data() }
-      events.push(eventData as IEvent)
-    });
-    return events
-  })
+  const fidelidash = useFidelidash()
+  const { data: orgData } = useOrg()
+  console.log("🚀 ~ orgData", orgData)
 
-  const { isLoading: loadingOld, error: errorOld, data: dataOld } = useQuery('oldEvents', async () => {
+  const { isLoading, data } = useQuery('initialEvents', async () => {
     const now = new Date();
-    const q = query(collection(firestore, "eventos"), orderBy('tempo', 'desc'), limit(10), where("tempo", "<", Date.parse(now.toDateString())))
+    const q = query(collection(firestore, "eventos"), orderBy('tempo', 'asc'), limit(5), where("tempo", ">", Date.parse(now.toDateString())))
     const querySnapshot = await getDocs(q);
     const events: IEvent[] = []
     querySnapshot.forEach((doc) => {
@@ -42,10 +38,58 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <PageWrapper>
-        {(error || errorOld) && <p>Error: {error || errorOld}</p>}
-        <Flex direction={['column', 'row']} gridColumnGap='50px' width='100%' justifyContent='center'>
-          {data && <EventsList title='Próximos eventos' events={data} isLoading={isLoading} />}
-          {dataOld && <EventsList title='Eventos passados' events={dataOld} isLoading={loadingOld} />}
+        <Flex direction='column' width='100%' >
+          <Flex direction='row' backgroundColor='blue.200' height='150px'>
+            <div>Logo</div>
+            <Box>
+              {orgData?.[0]?.sobre}
+            </Box>
+          </Flex>
+        </Flex>
+        <Flex direction='column' padding='0 18px' marginTop='12px'>
+          {data && <EventsList isHorizontal title='Próximos eventos' events={data} isLoading={isLoading} />}
+        </Flex>
+        <Flex direction='column' padding='0 18px' marginTop='12px'>
+          <Box as='h2' fontSize='1.5rem' fontWeight='500'>
+            Fidelidash
+          </Box>
+          <Flex direction='row' gridColumnGap='8px'>
+            {
+              fidelidash?.length > 0 && (
+                fidelidash?.slice(0, 5)?.map(item => {
+
+                  if (!item.firebaseData) {
+                    return null
+                  }
+
+                  return (
+                    <UserPicture key={item.id} userData={item.firebaseData} />
+                  )
+                })
+              )
+            }
+            <Link href='/fidelidash' passHref>
+              <Button>
+                Ver mais
+              </Button>
+            </Link>
+          </Flex>
+        </Flex>
+        <Flex direction='column' padding='0 18px' marginTop='12px'>
+          <Box as='h2' fontSize='1.5rem' fontWeight='500'>
+            Membros Team DASH
+          </Box>
+          <Flex>
+            {
+              orgData?.[0]?.membros?.map((item: any) => {
+                return (
+                  <Flex key={item.id}>
+                    {item?.apelido}
+                  </Flex>
+                )
+              })
+            }
+          </Flex>
         </Flex>
       </PageWrapper>
     </>
