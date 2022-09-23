@@ -73,7 +73,7 @@ export default function Menu() {
       left={["0", "0"]}
       width={["100%", "100px"]}
       height={["10vh", "100vh"]}
-      backgroundColor="blue.500"
+      backgroundColor="#b11e3a"
     >
       <MenuContent />
     </Flex>

@@ -21,6 +21,18 @@ export default function EventCard({ event }: IProps) {
     const date = new Date(event?.tempo)
     return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
   }
+
+  const getGame = (game: 'ult' | 'mq' | 'melee' | 'pm') => {
+    const games = {
+      ult: 'Ultimate',
+      mq: '64',
+      melee: 'Melee',
+      pm: 'P+'
+    }
+    const currentGame = games?.[game]
+    return currentGame ?? '--'
+  }
+
   return (
     <Flex as='button' direction='column' alignItems='flex-end' cursor='pointer' >
       <Link href={`/evento/${event.id}`} passHref>
@@ -31,16 +43,18 @@ export default function EventCard({ event }: IProps) {
           flexDirection='column'
           justifyContent='flex-start'
           borderRadius='24px'
-          backgroundColor='blue.200'
+          backgroundColor='#FF3068'
           padding='8px'
         >
           <Box width='100%' as='h2' fontSize='1.2rem' fontWeight='bold'>{event?.apelido || event.titulo}</Box>
           <Box>{getDate()} - {event?.cidade}, {event?.uf}</Box>
-          <Box>{Object.keys(event?.jogos).map((item) => {
-            if ((event?.jogos as any)?.[item]) {
-              return <Box key={item} textTransform='capitalize'>{item}</Box>
-            }
-          })}</Box>
+          <Flex direction='row' wrap='wrap' width='100%' justifyContent='space-evenly'>
+            {Object.keys(event?.jogos).map((item) => {
+              if ((event?.jogos as any)?.[item]) {
+                return <Box key={item} textTransform='capitalize'>{getGame(item as any)}</Box>
+              }
+            })}
+          </Flex>
         </Flex>
       </Link>
       {

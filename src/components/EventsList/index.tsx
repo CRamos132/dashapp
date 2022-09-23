@@ -18,11 +18,18 @@ export default function EventsList({ events, title, isLoading, isHorizontal }: I
   }
 
   const listDirection = isHorizontal ? 'row' : ['row', 'column'] as ['row', 'column']
+  const listOverflow = isHorizontal ? 'scroll' : ['scroll', "auto"] as ['scroll', 'auto']
 
   return (
     <Flex direction='column' alignItems='center' gridRowGap='12px' maxW='100%' overflow='hidden'>
       <Box as='h2' fontSize='1.5rem' fontWeight='500'>{title}</Box>
-      <Flex direction={listDirection} overflowX={['scroll', "auto"]} overflowY='hidden' whiteSpace='nowrap' width='100%' gridRowGap='12px' gridColumnGap='12px'>
+      <Flex direction={listDirection} overflowX={listOverflow} overflowY='hidden' whiteSpace='nowrap' width='100%' gridRowGap='12px' gridColumnGap='12px' sx={
+        {
+          '::-webkit-scrollbar': {
+            display: 'none'
+          }
+        }
+      }>
         {events.map((event) => <EventCard event={event} key={event?.id} />)}
         {isLoading && <Box>Carregando...</Box>}
         {events.length <= 10 && (

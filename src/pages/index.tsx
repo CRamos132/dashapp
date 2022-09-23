@@ -12,6 +12,8 @@ import useFidelidash from '../hooks/useFidelidash';
 import { UserPicture } from '../components/UserImage';
 import Link from 'next/link';
 import useOrg from '../hooks/useOrg';
+import Image from 'next/image';
+import DashMemberCard from '../components/DashMemberCard';
 
 const Home: NextPage = () => {
   const fidelidash = useFidelidash()
@@ -39,9 +41,11 @@ const Home: NextPage = () => {
       </Head>
       <PageWrapper>
         <Flex direction='column' width='100%' >
-          <Flex direction='row' backgroundColor='blue.200' height='150px'>
-            <div>Logo</div>
+          <Flex direction='row' backgroundColor='#162542' height='300px' padding='30px' gridColumnGap='20px' fontSize='1.5rem' alignItems='center'>
             <Box>
+              <Image height={200} width={200} src='/logo.png' alt='Logo da Team Dash' />
+            </Box>
+            <Box color='white' margin='auto 0px' width='100%' textAlign='center'>
               {orgData?.[0]?.sobre}
             </Box>
           </Flex>
@@ -53,7 +57,13 @@ const Home: NextPage = () => {
           <Box as='h2' fontSize='1.5rem' fontWeight='500'>
             Fidelidash
           </Box>
-          <Flex direction='row' gridColumnGap='8px'>
+          <Flex direction='row' gridColumnGap='8px' overflowX='scroll' overflowY='hidden' whiteSpace='nowrap' width='100%' sx={
+            {
+              '::-webkit-scrollbar': {
+                display: 'none'
+              }
+            }
+          }>
             {
               fidelidash?.length > 0 && (
                 fidelidash?.slice(0, 5)?.map(item => {
@@ -79,13 +89,17 @@ const Home: NextPage = () => {
           <Box as='h2' fontSize='1.5rem' fontWeight='500'>
             Membros Team DASH
           </Box>
-          <Flex>
+          <Flex overflowX='scroll' overflowY='hidden' margin='0px 0px 10px' whiteSpace='nowrap' width='100%' gridColumnGap='8px' sx={
+            {
+              '::-webkit-scrollbar': {
+                display: 'none'
+              }
+            }
+          }>
             {
               orgData?.[0]?.membros?.map((item: any) => {
                 return (
-                  <Flex key={item.id}>
-                    {item?.apelido}
-                  </Flex>
+                  <DashMemberCard key={item.id} id={item.id} name={item.apelido} />
                 )
               })
             }
