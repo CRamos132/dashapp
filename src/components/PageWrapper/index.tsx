@@ -18,7 +18,8 @@ export default function PageWrapper({ children, isAdminPage, ...props }: IProps)
       router.push('/')
     }
   }, [auth, isAdminPage, router])
-  if (!auth?.isInitialized) {
+
+  if (!auth?.isInitialized && isAdminPage) {
     return <Box>Loading</Box>
   }
   return (
