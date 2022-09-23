@@ -18,7 +18,6 @@ import DashMemberCard from '../components/DashMemberCard';
 const Home: NextPage = () => {
   const fidelidash = useFidelidash()
   const { data: orgData } = useOrg()
-  console.log("🚀 ~ orgData", orgData)
 
   const { isLoading, data } = useQuery('initialEvents', async () => {
     const now = new Date();
@@ -72,8 +71,12 @@ const Home: NextPage = () => {
                     return null
                   }
 
+                  console.log("🚀 ~ item.firebaseData", item.firebaseData)
                   return (
-                    <UserPicture key={item.id} userData={item.firebaseData} />
+                    <Flex key={item.id} direction='column' alignItems='center' gridROwGap='5px'>
+                      <UserPicture userData={item.firebaseData} />
+                      {item.firebaseData?.apelido}
+                    </Flex>
                   )
                 })
               )
