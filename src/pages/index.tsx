@@ -70,10 +70,8 @@ const Home: NextPage = () => {
                   if (!item.firebaseData) {
                     return null
                   }
-
-                  console.log("🚀 ~ item.firebaseData", item.firebaseData)
                   return (
-                    <Flex key={item.id} direction='column' alignItems='center' gridROwGap='5px'>
+                    <Flex key={item.id} direction='column' alignItems='center' gridRowGap='5px'>
                       <UserPicture userData={item.firebaseData} />
                       {item.firebaseData?.apelido}
                     </Flex>

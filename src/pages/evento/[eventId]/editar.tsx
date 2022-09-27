@@ -84,6 +84,11 @@ export default function EditEventPage() {
     setEventData(newEventData);
   };
 
+  const handleCheckbox = (value: any) => {
+    const newEventData = { ...eventData, jogos: value };
+    setEventData(newEventData);
+  }
+
   const handleRemoveFidelidash = (user?: IEventSubscriber) => {
     if (!eventData?.inscritos?.length) return
     const listWithoutUSer = eventData.inscritos?.filter(item => item.id !== user?.id)
@@ -142,6 +147,7 @@ export default function EditEventPage() {
           addFidelidashUsers={addFidelidashUsers}
           eventData={eventData}
           handleChange={handleChange}
+          handleCheckbox={handleCheckbox}
           handleRemoveFidelidash={handleRemoveFidelidash}
         />
       </form>

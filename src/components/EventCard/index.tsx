@@ -43,13 +43,14 @@ export default function EventCard({ event }: IProps) {
           flexDirection='column'
           justifyContent='flex-start'
           borderRadius='24px'
-          backgroundColor='#FF3068'
+          backgroundColor='#162542'
+          color='white'
           padding='8px'
         >
           <Box width='100%' as='h2' fontSize='1.2rem' fontWeight='bold'>{event?.apelido || event.titulo}</Box>
           <Box>{getDate()} - {event?.cidade}, {event?.uf}</Box>
           <Flex direction='row' wrap='wrap' width='100%' justifyContent='space-evenly'>
-            {Object.keys(event?.jogos).map((item) => {
+            {event?.jogos && Object.keys(event?.jogos).map((item) => {
               if ((event?.jogos as any)?.[item]) {
                 return <Box key={item} textTransform='capitalize'>{getGame(item as any)}</Box>
               }

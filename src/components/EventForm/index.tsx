@@ -5,10 +5,12 @@ import {
   Flex,
   Textarea,
   Button,
+  CheckboxGroup,
+  Checkbox,
 } from "@chakra-ui/react";
 import { formatISO } from "date-fns";
 import { useRouter } from "next/router";
-import { ChangeEventHandler } from "react";
+import { ChangeEventHandler, useMemo } from "react";
 import { IEvent, IEventSubscriber } from "../../interfaces/Event";
 import { capitalizeFirstLetter } from "../../utils/string";
 import { SubscribersList } from "../SubscribersList";
@@ -18,6 +20,7 @@ interface IProps {
   handleChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   addFidelidashUsers: () => Promise<void>;
   handleRemoveFidelidash: (user?: IEventSubscriber) => void;
+  handleCheckbox: (values: any) => void
 }
 
 export default function EventForm({
@@ -25,10 +28,36 @@ export default function EventForm({
   handleChange,
   addFidelidashUsers,
   handleRemoveFidelidash,
+  handleCheckbox: handleCheckboxFromProps
 }: IProps) {
   const router = useRouter();
   const location = router.pathname.split("/");
   const locationName = capitalizeFirstLetter(location[location.length - 1]);
+
+  const handleCheckbox = (value: string[]) => {
+    const values = {
+      mq: value.includes('mq'),
+      ult: value.includes('ult'),
+      pm: value.includes('pm'),
+      melee: value.includes('melee'),
+    }
+    handleCheckboxFromProps(values)
+  }
+
+  const games = useMemo(() => {
+    if (!eventData?.jogos) {
+      return []
+    }
+    const gamesKeys = Object.keys(eventData?.jogos)
+    const rawGames = gamesKeys?.map(item => {
+      if ((eventData?.jogos as any)?.[item]) {
+        return item
+      }
+      return null
+    })
+    const games = rawGames.filter(item => item)
+    return games as string[]
+  }, [eventData])
 
   return (
     <Flex
@@ -66,7 +95,7 @@ export default function EventForm({
           name="tempo"
           type="datetime-local"
           value={
-            (eventData.tempo && formatISO(new Date(eventData.tempo)).slice(0,-6)) || ""
+            (eventData.tempo && formatISO(new Date(eventData.tempo)).slice(0, -6)) || ""
           }
           onChange={handleChange}
         />
@@ -78,7 +107,7 @@ export default function EventForm({
           name="limite"
           type="datetime-local"
           value={
-            (eventData.limite && formatISO(new Date(eventData.limite)).slice(0,-6)) || ""
+            (eventData.limite && formatISO(new Date(eventData.limite)).slice(0, -6)) || ""
           }
           onChange={handleChange}
         />
@@ -188,6 +217,17 @@ export default function EventForm({
           disabled
           defaultValue={eventData?.org || ""}
         />
+      </FormControl>
+      <FormControl>
+        <FormLabel htmlFor="jogos">Jogos</FormLabel>
+        <CheckboxGroup value={games} onChange={handleCheckbox}>
+          <Flex direction='row' gridColumnGap='8px'>
+            <Checkbox value='ult'>Ultimate</Checkbox>
+            <Checkbox value='melee'>Melee</Checkbox>
+            <Checkbox value='pm'>P+</Checkbox>
+            <Checkbox value='mq'>64</Checkbox>
+          </Flex>
+        </CheckboxGroup>
       </FormControl>
       <Flex justifyContent="center" width="100%">
         <SubscribersList
