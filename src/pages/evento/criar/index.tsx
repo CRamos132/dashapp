@@ -62,6 +62,7 @@ export default function DuplicateEventPage() {
     submitData.sobre = submitData.sobre?.replaceAll(/\r?\n/g, "<br>");
     submitData.stagelist = submitData.stagelist?.replaceAll(/\r?\n/g, "<br>");
     submitData.regras = submitData.regras?.replaceAll(/\r?\n/g, "<br>");
+    submitData.org = 'Team DASH'
     if (submitData.socialMediaText) {
       submitData.socialMediaText = encodeURIComponent(
         submitData.socialMediaText

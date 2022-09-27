@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { doc, updateDoc } from "firebase/firestore";
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import {
+  Button,
+  Flex,
   useToast,
 } from "@chakra-ui/react";
 import { firestore } from "../../../lib/firebase";
@@ -89,6 +91,19 @@ export default function EditEventPage() {
     setEventData(newEventData);
   }
 
+  const handleDelete = () => {
+    deleteDoc(doc(firestore, "eventos", eventId as string))
+      .then(() => {
+        toast({
+          title: "Evento deletado com sucesso.",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+        })
+        router.push('/')
+      })
+  }
+
   const handleRemoveFidelidash = (user?: IEventSubscriber) => {
     if (!eventData?.inscritos?.length) return
     const listWithoutUSer = eventData.inscritos?.filter(item => item.id !== user?.id)
@@ -112,6 +127,7 @@ export default function EditEventPage() {
     submitData.sobre = submitData.sobre.replaceAll(/\r?\n/g, "<br>");
     submitData.stagelist = submitData.stagelist.replaceAll(/\r?\n/g, "<br>");
     submitData.regras = submitData.regras.replaceAll(/\r?\n/g, "<br>");
+    submitData.org = 'Team DASH'
     if (submitData.socialMediaText) {
       submitData.socialMediaText = encodeURIComponent(
         submitData.socialMediaText
@@ -142,6 +158,9 @@ export default function EditEventPage() {
 
   return (
     <PageWrapper>
+      <Flex>
+        <Button onClick={handleDelete}>Deletar evento</Button>
+      </Flex>
       <form onSubmit={handleSubmit}>
         <EventForm
           addFidelidashUsers={addFidelidashUsers}
