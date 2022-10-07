@@ -1,7 +1,18 @@
-import { Flex } from "@chakra-ui/react";
+import React from "react";
+import { Button, Flex, useDisclosure } from "@chakra-ui/react";
 import { AiFillHome } from "react-icons/ai";
 import { BsFillPersonFill, BsFillPersonCheckFill } from "react-icons/bs";
 import { FaTrophy, FaUsers } from "react-icons/fa";
+import { GiHamburgerMenu } from 'react-icons/gi'
+import {
+  Drawer,
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerContent,
+  DrawerCloseButton,
+} from '@chakra-ui/react'
 
 import { useAuth } from "../../contexts/AuthContext";
 import { CustomLink } from "../CustomLink";
@@ -11,7 +22,7 @@ function MenuContent() {
   const auth = useAuth();
   return (
     <>
-      <Flex flexDir={["row", "column"]} gridGap="18px">
+      <Flex flexDir='column' gridGap="18px">
         <CustomLink href="/" color="initial" _hover={{ color: "initial" }}>
           <IconButton aria-label="Home" as={AiFillHome} w={12} h={12} />
         </CustomLink>
@@ -52,6 +63,7 @@ function MenuContent() {
         <IconButton
           aria-label={auth.user ? "Profile" : "Login"}
           justifySelf="flex-end"
+          marginTop='auto'
           as={BsFillPersonFill}
           w={12}
           h={12}
@@ -62,20 +74,46 @@ function MenuContent() {
 }
 
 export default function Menu() {
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const btnRef = React.useRef()
+
   return (
-    <Flex
-      direction={["row", "column"]}
-      position="fixed"
-      alignItems="center"
-      justifyContent="space-between"
-      padding="10px"
-      top={["90vh", "0"]}
-      left={["0", "0"]}
-      width={["100%", "100px"]}
-      height={["10vh", "100vh"]}
-      backgroundColor="#b11e3a"
-    >
-      <MenuContent />
-    </Flex>
+    <>
+      <Flex
+        direction={["row", "column"]}
+        display={['none', 'flex']}
+        position="fixed"
+        alignItems="center"
+        justifyContent="space-between"
+        padding="10px"
+        top={["90vh", "0"]}
+        left={["0", "0"]}
+        width={["100%", "100px"]}
+        height={["10vh", "100vh"]}
+        backgroundColor="#b11e3a"
+      >
+        <MenuContent />
+      </Flex>
+      <Flex display={['flex', 'none']} position='fixed' top='0' left='0' width='100%' height='10vh'>
+        <Flex direction='row' width='100%' justifyContent='end'>
+          <Button ref={btnRef as any} backgroundColor='transparent' onClick={onOpen}>
+            <GiHamburgerMenu />
+          </Button>
+        </Flex>
+        <Drawer
+          isOpen={isOpen}
+          placement='right'
+          onClose={onClose}
+          finalFocusRef={btnRef as any}
+        >
+          <DrawerOverlay />
+          <DrawerContent >
+            <Flex direction='column' width='100%' alignItems='center' height='100vh'>
+              <MenuContent />
+            </Flex>
+          </DrawerContent>
+        </Drawer>
+      </Flex>
+    </>
   );
 }
