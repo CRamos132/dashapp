@@ -29,6 +29,26 @@ import { SubscribersList } from "../../../components/SubscribersList";
 import { CustomLink } from "../../../components/CustomLink";
 import { getEventById } from "../../../lib/firebase/EventRepository";
 
+function EnterEventButton({ inscritos, handleRemove, handleAdd }: { inscritos?: IEventSubscriber[], handleRemove: (someUser?: IEventSubscriber | undefined) => void, handleAdd: () => void }) {
+  const auth = useAuth();
+  if (!auth?.user) {
+    return null
+  }
+  return (
+    <div>
+      {!inscritos?.find(
+        (user) => user.id === auth.user?.uid
+      ) ? (
+        <Button onClick={handleAdd}>Me inscrever</Button>
+      ) : (
+        <Button onClick={() => { handleRemove() }}>
+          Cancelar inscrição
+        </Button>
+      )}
+    </div>
+  )
+}
+
 function EventInformation({
   title,
   information,
@@ -123,7 +143,7 @@ export default function EventPage() {
       });
   };
 
-  const handleRemove = (someUser: IEventSubscriber | undefined) => {
+  const handleRemove = (someUser?: IEventSubscriber) => {
     const user =
       someUser && auth.isAdmin
         ? someUser
@@ -305,25 +325,7 @@ export default function EventPage() {
                 ) : (
                   ""
                 )}
-                {!data?.inscritos?.find(
-                  (user) => user.id === auth.user?.uid
-                ) ? (
-                  <Button onClick={handleAdd}>Me inscrever</Button>
-                ) : (
-                  <Button onClick={() => handleRemove}>
-                    Cancelar inscrição
-                  </Button>
-                )}
-                {/* {data?.inscritos?.map((user) => {
-                  return (
-                    <Flex key={user.id} direction='row' alignItems='center' gridColumnGap='8px'>
-                      {user?.foto !== 'img/default-profile.png' ? (
-                        <Image height={12} width='auto' borderRadius='50%' src={user.foto} alt={user.nome} border={user?.fidelidash ? '2px solid yellow' : ''} />
-                      ) : <Box height={12} width={12} borderRadius='50%' backgroundColor='gray.400' border={user?.fidelidash ? '2px solid yellow' : ''} />}
-                      <p>{user.nome}</p>
-                    </Flex>
-                  )
-                })} */}
+                <EnterEventButton inscritos={data?.inscritos} handleAdd={handleAdd} handleRemove={handleRemove} />
                 {data?.inscritos && (
                   <SubscribersList
                     eventId={data.id}
