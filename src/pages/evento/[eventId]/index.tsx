@@ -34,18 +34,25 @@ function EnterEventButton({ inscritos, handleRemove, handleAdd }: { inscritos?: 
   if (!auth?.user) {
     return null
   }
+
+  const user = inscritos?.find(
+    (user) => user.id === auth.user?.uid
+  )
+  const isUserInTourney = !!user
   return (
-    <div>
-      {!inscritos?.find(
-        (user) => user.id === auth.user?.uid
-      ) ? (
+    <Flex
+      width="80%"
+      maxWidth="500px"
+      direction="column"
+    >
+      {!isUserInTourney ? (
         <Button onClick={handleAdd}>Me inscrever</Button>
       ) : (
         <Button onClick={() => { handleRemove() }}>
           Cancelar inscrição
         </Button>
       )}
-    </div>
+    </Flex >
   )
 }
 
@@ -57,27 +64,32 @@ function EventInformation({
   information: string;
 }) {
   return (
-    <Accordion allowMultiple width="80%" maxWidth="300px">
-      <AccordionItem>
-        <Button as="h2" width="100%">
-          <AccordionButton>
-            <Box flex="1" textAlign="center">
-              {title}
-            </Box>
-            <AccordionIcon />
-          </AccordionButton>
-        </Button>
-        <AccordionPanel
-          padding="32px"
-          backgroundColor="white"
-          borderRadius="12px"
-        >
-          {information.split("<br>").map((text, index) => (
-            <p key={`${text}-${index}`}>{text}</p>
-          ))}
-        </AccordionPanel>
-      </AccordionItem>
-    </Accordion>
+    <AccordionItem>
+      <Button as="h2" width="100%">
+        <AccordionButton>
+          <Box flex="1" textAlign="center">
+            {title}
+          </Box>
+          <AccordionIcon />
+        </AccordionButton>
+      </Button>
+      <AccordionPanel
+        padding="32px"
+        backgroundColor="white"
+        borderRadius="12px"
+      >
+        {information.split("<br>").map((text, index) => {
+          return (
+            (
+              <>
+                <p key={`${text}-${index}`}>{text}</p>
+                <br />
+              </>
+            )
+          )
+        })}
+      </AccordionPanel>
+    </AccordionItem>
   );
 }
 
@@ -90,7 +102,8 @@ export default function EventPage() {
   const { isLoading, data, refetch } = useQuery(
     `event-${eventId}`,
     async () => {
-      return getEventById(eventId as string);
+      const event = getEventById(eventId as string);
+      return event
     }
   );
 
@@ -115,7 +128,7 @@ export default function EventPage() {
     const user = {
       id: auth.user?.uid,
       nome: auth.aditionalData?.apelido || auth.user?.displayName,
-      foto: auth.aditionalData?.foto,
+      foto: auth.aditionalData?.foto || "img/default-profile.png",
       ...(auth.aditionalData?.fidelidash && {
         fidelidash: auth.aditionalData?.fidelidash,
       }),
@@ -150,7 +163,7 @@ export default function EventPage() {
         : {
           id: auth.user?.uid,
           nome: auth.user?.displayName,
-          foto: auth.aditionalData?.foto,
+          foto: auth.aditionalData?.foto || "img/default-profile.png",
           ...(auth.aditionalData?.fidelidash && {
             fidelidash: auth.aditionalData?.fidelidash,
           }),
@@ -158,7 +171,7 @@ export default function EventPage() {
     updateDoc(doc(firestore, "eventos", eventId as string), {
       inscritos: arrayRemove(user),
     })
-      .then((data) => {
+      .then(() => {
         refetch();
         toast({
           title: "Inscrição cancelada com sucesso.",
@@ -252,36 +265,21 @@ export default function EventPage() {
             width="100%"
             margin="12px auto"
           >
-            {isUserSubscribedToTheEvent && (
-              <CustomLink
-                href={`https://twitter.com/intent/tweet?via=TeamDASHBR&text=${data?.socialMediaText || defaultSocialMediaText
-                  }`}
-                width="100%"
-                background="gray.100"
-                textAlign="center"
-                borderRadius="6px"
-                padding="6px"
-                fontWeight="bold"
-                color="black"
-                _hover={{
-                  backgroundColor: "gray.200",
-                }}
-              >
-                Tweet
-              </CustomLink>
-            )}
-            {data?.regras && (
-              <EventInformation information={data.regras} title="Regras" />
-            )}
-            {data?.local && (
-              <EventInformation information={data.local} title="Local" />
-            )}
-            {data?.stagelist && (
-              <EventInformation
-                information={data.stagelist}
-                title="Stagelist"
-              />
-            )}
+
+            <Accordion allowMultiple width="80%" maxWidth="500px" display='flex' flexDir='column' rowGap='8px'>
+              {data?.regras && (
+                <EventInformation information={data.regras} title="Regras" />
+              )}
+              {data?.local && (
+                <EventInformation information={data.local} title="Local" />
+              )}
+              {data?.stagelist && (
+                <EventInformation
+                  information={data.stagelist}
+                  title="Stagelist"
+                />
+              )}
+            </Accordion>
             {data?.bracket && (
               <Button
                 as="a"
@@ -289,11 +287,24 @@ export default function EventPage() {
                 target="_blank"
                 rel="noopener"
                 width="80%"
-                maxWidth="300px"
+                maxWidth="500px"
               >
-                Bracket
+                Go to Bracket
               </Button>
             )}
+
+            <Box maxW={500} margin="0px auto">
+              {data?.sobre.split("<br>").map((text, index) => {
+                return (
+                  (
+                    <>
+                      <p key={`${text}-${index}`}>{text}</p>
+                      <br />
+                    </>
+                  )
+                )
+              })}
+            </Box>
           </Flex>
           {data?.inscricao === "local" ? (
             <>
@@ -326,12 +337,31 @@ export default function EventPage() {
                   ""
                 )}
                 <EnterEventButton inscritos={data?.inscritos} handleAdd={handleAdd} handleRemove={handleRemove} />
+                {isUserSubscribedToTheEvent && (
+                  <CustomLink
+                    href={`https://twitter.com/intent/tweet?via=TeamDASHBR&text=${data?.socialMediaText || defaultSocialMediaText
+                      }`}
+                    width="80%"
+                    maxWidth="500px"
+                    background="gray.100"
+                    textAlign="center"
+                    borderRadius="6px"
+                    padding="6px"
+                    fontWeight="bold"
+                    color="black"
+                    _hover={{
+                      backgroundColor: "gray.200",
+                    }}
+                  >
+                    Tweet
+                  </CustomLink>
+                )}
                 {data?.inscritos && (
                   <SubscribersList
                     eventId={data.id}
                     subscribers={data.inscritos}
                     removeSubscriber={auth.isAdmin ? handleRemove : undefined}
-                  ></SubscribersList>
+                  />
                 )}
               </Flex>
             </>
