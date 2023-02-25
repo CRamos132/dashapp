@@ -19,7 +19,6 @@ export function SubscribersList({
 }: IProps) {
   return (
     <Grid
-      direction="column"
       justifyContent="center"
       alignItems="center"
       gap="6"

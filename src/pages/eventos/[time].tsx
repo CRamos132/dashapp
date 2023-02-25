@@ -15,6 +15,7 @@ import EventCard from "../../components/EventCard";
 import PageWrapper from "../../components/PageWrapper";
 import { firestore } from "../../lib/firebase";
 import { IEvent } from "../../interfaces/Event";
+import Link from "next/link";
 
 export default function EventsPage() {
   const [lastItem, setLastItem] = useState<any>(null);
@@ -23,7 +24,7 @@ export default function EventsPage() {
 
   const eventTime = time === "old" ? "passados" : "futuros";
   const operator = time === "old" ? "<" : ">";
-  
+
   const { data, fetchNextPage, isLoading, isFetchingNextPage, hasNextPage } =
     useInfiniteQuery(
       `${eventTime}Events`,
@@ -78,16 +79,26 @@ export default function EventsPage() {
           })}
         </Flex>
 
-        <Button
-          mt="4"
-          mb="2"
-          disabled={!hasNextPage || isLoading || isFetchingNextPage}
-          onClick={() => {
-            fetchNextPage();
-          }}
-        >
-          Mais
-        </Button>
+        <Flex direction="row" justifyContent="space-around" width="250px">
+          <Button
+            mt="4"
+            mb="2"
+            disabled={!hasNextPage || isLoading || isFetchingNextPage}
+            onClick={() => {
+              fetchNextPage();
+            }}
+          >
+            Mais
+          </Button>
+          <Link href={`/eventos/${time === "old" ? "next" : "old"}`} passHref >
+            <Button
+              mt="4"
+              mb="2"
+            >
+              Eventos {time === "old" ? "futuros" : "passados"}
+            </Button>
+          </Link>
+        </Flex>
       </Flex>
     </PageWrapper>
   );

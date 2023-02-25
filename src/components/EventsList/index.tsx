@@ -12,10 +12,6 @@ interface IProps {
 }
 
 export default function EventsList({ events, title, isLoading, isHorizontal }: IProps) {
-  const getRedirectLink = () => {
-    const isPast = title === "Eventos passados"
-    return `/eventos/${isPast ? 'old' : 'next'}`
-  }
 
   const listDirection = isHorizontal ? 'row' : ['row', 'column'] as ['row', 'column']
   const listOverflow = isHorizontal ? 'scroll' : ['scroll', "auto"] as ['scroll', 'auto']
@@ -32,13 +28,20 @@ export default function EventsList({ events, title, isLoading, isHorizontal }: I
       }>
         {events.map((event) => <EventCard event={event} key={event?.id} />)}
         {isLoading && <Box>Carregando...</Box>}
-        {events.length <= 10 && (
-          <Link href={getRedirectLink()} passHref >
-            <Button flex={1}>
-              Ver mais
+        <Flex as='button' direction='column' alignItems='flex-end' cursor='pointer' justifyContent="space-around">
+          {events.length <= 10 && (
+            <Link href="/eventos/next" passHref >
+              <Button width="100%">
+                Ver mais
+              </Button>
+            </Link>
+          )}
+          <Link href="/eventos/old" passHref >
+            <Button >
+              Ver eventos passados
             </Button>
           </Link>
-        )}
+        </Flex>
       </Flex>
     </Flex>
   )
