@@ -19,7 +19,10 @@ import { CustomLink } from "../CustomLink";
 import IconButton from "../IconButton";
 
 function MenuContent() {
-  const auth = useAuth();
+  const { user, isAdmin } = useAuth();
+
+  const userId = user?.uid
+
   return (
     <>
       <Flex flexDir='column' gridGap="18px">
@@ -40,7 +43,7 @@ function MenuContent() {
         >
           <IconButton aria-label="Ligas" as={FaTrophy} w={12} h={12} />
         </CustomLink>
-        {auth.isAdmin ? (
+        {isAdmin ? (
           <CustomLink
             href="/admin"
             color="initial"
@@ -56,12 +59,12 @@ function MenuContent() {
         ) : null}
       </Flex>
       <CustomLink
-        href={auth.user ? `/user/${auth.user.uid}` : "/login"}
+        href={user ? `/user/${userId}` : "/login"}
         color="initial"
         _hover={{ color: "initial" }}
       >
         <IconButton
-          aria-label={auth.user ? "Profile" : "Login"}
+          aria-label={user ? "Profile" : "Login"}
           justifySelf="flex-end"
           marginTop='auto'
           as={BsFillPersonFill}

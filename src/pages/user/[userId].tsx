@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { Button, Flex, Grid, Heading, useToast } from "@chakra-ui/react";
+import { Box, Button, Flex, FormLabel, Grid, Heading, useToast } from "@chakra-ui/react";
 
 import PageWrapper from "../../components/PageWrapper";
 import { useAuth } from "../../contexts/AuthContext";
@@ -146,18 +146,37 @@ export default function UserPage() {
                 field="email"
                 input={{ value: userData.email, onChange: handleChange }}
               ></FieldText>
-              <FieldText
-                isEditable={isProfile}
-                formControl={fieldTextWrapperProps}
-                field="sobre"
-                input={{
-                  value: userData.sobre,
-                  onChange: handleChange,
-                  as: "textarea",
-                  height: "75px",
-                  border: "1px solid",
-                }}
-              ></FieldText>
+              {
+                isProfile ? (
+                  <FieldText
+                    isEditable={isProfile}
+                    formControl={fieldTextWrapperProps}
+                    field="sobre"
+                    input={{
+                      value: userData.sobre,
+                      onChange: handleChange,
+                      as: "textarea",
+                      height: "75px",
+                      border: "1px solid",
+                    }}
+                  ></FieldText>
+                ) : (
+                  <Flex
+                    direction='column'
+                    alignItems='flex-start'
+                    width='100%'
+                  >
+                    <FormLabel
+                      mb="1"
+                      color="blue.500"
+                      fontWeight="600"
+                    >
+                      Sobre
+                    </FormLabel>
+                    <Box>{userData.sobre}</Box>
+                  </Flex>
+                )
+              }
               <FieldText
                 isEditable={isProfile}
                 formControl={fieldTextWrapperProps}
