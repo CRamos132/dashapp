@@ -99,8 +99,8 @@ export default function Menu() {
       </Flex>
       <Flex display={['flex', 'none']} position='fixed' top='0' left='0' width='100%' height='10vh'>
         <Flex direction='row' width='100%' justifyContent='end'>
-          <Button ref={btnRef as any} backgroundColor='transparent' onClick={onOpen}>
-            <GiHamburgerMenu />
+          <Button ref={btnRef as any} backgroundColor='#162542' onClick={onOpen} height='50px' width='50px'>
+            <GiHamburgerMenu color="white" height='24px' width='24px' />
           </Button>
         </Flex>
         <Drawer

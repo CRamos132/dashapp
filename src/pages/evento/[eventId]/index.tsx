@@ -367,7 +367,7 @@ export default function EventPage() {
             </>
           ) : (
             <Button as="a" href={data?.bracket} target="_blank" rel="noopener">
-              Ir para o Smash.gg
+              Ir para o Start.gg
             </Button>
           )}
         </Flex>

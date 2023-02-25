@@ -23,7 +23,7 @@ export default function PageWrapper({ children, isAdminPage, ...props }: IProps)
     return <Box>Loading</Box>
   }
   return (
-    <Box minHeight='100vh' padding={['0 0 10vh 0', '0 0 0 100px']} {...props}>
+    <Box minHeight='100vh' padding={['0 0 0 0', '0 0 0 100px']} {...props}>
       {children}
       <Menu />
     </Box>
