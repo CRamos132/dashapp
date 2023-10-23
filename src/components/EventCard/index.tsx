@@ -44,7 +44,7 @@ function GamesSection({ games }: { games: string[] }) {
   }, [games])
 
   return (
-    <Flex direction='row' wrap='wrap' width='100%' justifyContent='space-evenly'>
+    <Flex direction='row' wrap='wrap' width='100%' justifyContent='space-evenly' marginTop='8px'>
       {mainGames.map((item) => {
         return (
           <Image
@@ -57,7 +57,7 @@ function GamesSection({ games }: { games: string[] }) {
         )
       })}
       {
-        aditionalGames.length && (
+        Boolean(aditionalGames.length) && (
           <Tooltip label={aditionalGames.join(', ')}>
             <Button
               fontSize={24}
@@ -85,6 +85,11 @@ export default function EventCard({ event }: IProps) {
     return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
   }
 
+  const gamesList = useMemo(() => {
+    const games = Object.keys(event?.jogos).filter(item => (event?.jogos as any)?.[item])
+    return games.sort().reverse()
+  }, [event?.jogos])
+
   return (
     <Flex as='button' direction='column' alignItems='flex-end' cursor='pointer' >
       <Link href={`/evento/${event.id}`} passHref>
@@ -101,7 +106,7 @@ export default function EventCard({ event }: IProps) {
         >
           <Box width='100%' as='h2' fontSize='1.2rem' fontWeight='bold'>{event?.apelido || event.titulo}</Box>
           <Box>{getDate()} - {event?.cidade}, {event?.uf}</Box>
-          <GamesSection games={Object.keys(event?.jogos).sort().reverse()} />
+          <GamesSection games={gamesList} />
         </Flex>
       </Link>
       {
