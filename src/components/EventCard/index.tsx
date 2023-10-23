@@ -18,7 +18,6 @@ interface IProps {
   event: IEvent
 }
 
-
 function GamesSection({ games }: { games: string[] }) {
   const getGame = (game: 'ult' | 'mq' | 'melee' | 'pm' | 'mk' | 'sf') => {
     const games = {
