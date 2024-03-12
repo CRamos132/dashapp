@@ -85,7 +85,8 @@ export default function EventCard({ event }: IProps) {
   }
 
   const gamesList = useMemo(() => {
-    const games = Object.keys(event?.jogos).filter(item => (event?.jogos as any)?.[item])
+    const jogos = event?.jogos ?? {}
+    const games = Object.keys(jogos).filter(item => (event?.jogos as any)?.[item])
     return games.sort().reverse()
   }, [event?.jogos])
 
