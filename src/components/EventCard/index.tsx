@@ -51,7 +51,7 @@ function GamesSection({ games }: { games: string[] }) {
       justifyContent="space-evenly"
       marginTop="8px"
     >
-      {mainGames.map((item) => {
+      {[...mainGames, "tekken"].map((item) => {
         return (
           <Image
             key={item}
@@ -123,13 +123,13 @@ export default function EventCard({ event }: IProps) {
       {auth.isAdmin ? (
         <Flex>
           <Menu>
-            <MenuButton as={Button}>{"..."}</MenuButton>
+            <MenuButton as={Button}> {"..."} </MenuButton>
             <MenuList>
               <MenuItem>
-                <Link href={`/evento/${event.id}/duplicar`}>Duplicar</Link>
+                <Link href={`/evento/${event.id}/duplicar`}> Duplicar </Link>
               </MenuItem>
               <MenuItem>
-                <Link href={`/evento/${event.id}/editar`}>Editar</Link>
+                <Link href={`/evento/${event.id}/editar`}> Editar </Link>
               </MenuItem>
             </MenuList>
           </Menu>
