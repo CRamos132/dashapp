@@ -56,7 +56,7 @@ function GamesSection({ games }: { games: string[] }) {
           <Image
             key={item}
             src={`/${item}.png`}
-            width={"auto"}
+            width={100}
             height={45}
             alt={getGame(item as any)}
           />
