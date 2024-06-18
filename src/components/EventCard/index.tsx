@@ -51,7 +51,7 @@ function GamesSection({ games }: { games: string[] }) {
       justifyContent="space-evenly"
       marginTop="8px"
     >
-      {[...mainGames, "tekken"].map((item) => {
+      {[mainGames].map((item) => {
         return (
           <Image
             key={item}
