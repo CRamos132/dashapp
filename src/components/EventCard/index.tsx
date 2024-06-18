@@ -51,13 +51,13 @@ function GamesSection({ games }: { games: string[] }) {
       justifyContent="space-evenly"
       marginTop="8px"
     >
-      {[...mainGames, "tekken"].map((item) => {
+      {mainGames.map((item) => {
         return (
           <Image
             key={item}
             src={`/${item}.png`}
-            width={100}
-            height={"auto"}
+            width={"auto"}
+            height={45}
             alt={getGame(item as any)}
           />
         );
