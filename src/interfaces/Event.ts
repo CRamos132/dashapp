@@ -7,6 +7,8 @@ export interface IEventSubscriber {
   nome?: string;
 }
 
+export type GamesTypes = "ult" | "mq" | "melee" | "pm" | "mk" | "sf" | "tekken";
+
 export interface IEvent {
   apelido?: string;
   bracket: string;
@@ -14,13 +16,7 @@ export interface IEvent {
   fb: string;
   id: string;
   inscricao: string;
-  jogos: {
-    melee: boolean;
-    mq: boolean;
-    out: boolean;
-    pm: boolean;
-    ult: boolean;
-  };
+  jogos: Record<GamesTypes, boolean>;
   limite: number;
   org: string;
   regras: string;
