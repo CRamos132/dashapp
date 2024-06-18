@@ -42,6 +42,7 @@ export default function EventForm({
       melee: value.includes('melee'),
       mk: value.includes('mk'),
       sf: value.includes('sf'),
+      tekken: value.includes('tekken'),
     }
     handleCheckboxFromProps(values)
   }
@@ -230,6 +231,7 @@ export default function EventForm({
             <Checkbox value='mq'>64</Checkbox>
             <Checkbox value='mk'>Mario Kart</Checkbox>
             <Checkbox value='sf'>Street Fighter</Checkbox>
+            <Checkbox value='tekken'>Tekken</Checkbox>
           </Flex>
         </CheckboxGroup>
       </FormControl>
