@@ -7,7 +7,15 @@ export interface IEventSubscriber {
   nome?: string;
 }
 
-export type GamesTypes = "ult" | "mq" | "melee" | "pm" | "mk" | "sf" | "tekken";
+export type GamesTypes =
+  | "ult"
+  | "mq"
+  | "melee"
+  | "pm"
+  | "mk"
+  | "sf"
+  | "tekken"
+  | "rivals";
 
 export interface IEvent {
   apelido?: string;
