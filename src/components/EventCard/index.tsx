@@ -28,6 +28,7 @@ function GamesSection({ games }: { games: string[] }) {
       mk: "Mario Kart",
       sf: "Street Fighter",
       tekken: "Tekken",
+      rivals: "Rivals of Aether 2",
     };
     const currentGame = games?.[game];
     return currentGame ?? "--";

@@ -232,6 +232,7 @@ export default function EventForm({
             <Checkbox value='mk'>Mario Kart</Checkbox>
             <Checkbox value='sf'>Street Fighter</Checkbox>
             <Checkbox value='tekken'>Tekken</Checkbox>
+            <Checkbox value='rivals'>Rivals 2</Checkbox>
           </Flex>
         </CheckboxGroup>
       </FormControl>
