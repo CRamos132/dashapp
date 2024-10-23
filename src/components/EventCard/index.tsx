@@ -28,7 +28,6 @@ function GamesSection({ games }: { games: string[] }) {
       mk: "Mario Kart",
       sf: "Street Fighter",
       tekken: "Tekken",
-      rivals: "Rivals of Aether 2",
     };
     const currentGame = games?.[game];
     return currentGame ?? "--";
@@ -57,7 +56,7 @@ function GamesSection({ games }: { games: string[] }) {
           <Image
             key={item}
             src={`/${item}.png`}
-            width={95}
+            width={100}
             height={45}
             alt={getGame(item as any)}
           />
